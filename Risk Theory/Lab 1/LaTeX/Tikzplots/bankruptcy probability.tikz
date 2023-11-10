@@ -1,0 +1,57 @@
+\begin{tikzpicture}
+    \begin{axis}[
+        height = 0.5\linewidth,
+        width = 0.875\linewidth,
+        xlabel={Ціна страховки},
+        ylabel={Імовірність банкрутства},
+        scale only axis,
+        scaled y ticks=false,
+        xmin=-10, xmax=510,
+        ymin=-0.0005, ymax=0.0105, 
+        ytick distance=0.001,
+        yticklabel style={
+            /pgf/number format/.cd,
+            fixed,
+            precision=3
+        }, % set fixed precision of 2 decimal places
+        grid=both,
+        grid style={draw=gray!30},
+        minor grid style={draw=gray!10},
+        minor x tick num=1,
+        minor y tick num=3,
+    ]
+        % \addplot[blue!80, line width=1pt] table {Data/bankruptcy probability.txt};
+        \addplot[blue!80, line width=2pt] table {
+            0 0.010175333947356036
+            66 0.010175333947356036
+        };
+        \addplot[gray!50, dash pattern={on 7pt off 4pt}, line width=1pt] table {
+            66 0.010175333947356036
+            66 0.0015100043944361596
+        };
+
+        \addplot[blue!80, line width=2pt] table {
+            67 0.0015100043944361596
+            166 0.0015100043944361596
+        };
+        \addplot[gray!50, dash pattern={on 7pt off 4pt}, line width=1pt] table {
+            166 0.0015100043944361596
+            166 0.00018127121708721994
+        };
+
+        \addplot[blue!80, line width=2pt] table {
+            167 0.00018127121708721994
+            266 0.00018127121708721994
+        };
+        \addplot[gray!50, dash pattern={on 7pt off 4pt}, line width=1pt] table {
+            266 0.00018127121708721994
+            266 0.0
+        };
+
+        \addplot[blue!80, line width=2pt] table {
+            267 0.0
+            500 0.0
+        };
+
+    \end{axis}
+\end{tikzpicture}

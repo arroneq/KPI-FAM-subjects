@@ -1,0 +1,395 @@
+% !TeX program = lualatex
+% !TeX encoding = utf8
+% !BIB program = biber
+% !TeX spellcheck = uk_UA
+
+\documentclass{mathreport}
+\input{packages}
+
+\begin{document}
+
+\ReportPreamble{Лабораторна робота №1}
+\ReportName{Аналіз та обробка експертних даних}
+\ReportSubject{Інтелектуальний аналіз даних}
+
+\AuthorInfo{Студент 5 курсу, групи КМ-31мн,}
+\AuthorName{Цибульник Антон Владиславович}
+
+\SupervisorInfo{Доцент кафедри ПМА,}
+\SupervisorName{Андрійчук Олег Валентинович}
+
+% warning: in order to fit the text in the very right side of a page, set the longest label
+\TheLongestLabel{Цибульник Антон Владиславович}
+
+\import{Title/}{title}
+
+\tableofcontents
+
+\newpage
+
+\section*{Постановка задачі}
+\addcontentsline{toc}{section}{Постановка задачі}
+
+Нехай групі з $M$ експертів надано завдання виконати порівняльний аналіз $N$ альтернатив. На основі отриманих матриць мультиплікативних парних порівнянь цієї групи експертів у лабораторній роботі слід провести агрегацію відповідних матриць та реалізувати процедуру зворотного зв'язку з використанням спектрального коефіцієнта узгодженості (Double Entropy) для подальшого підвищення узгодженості наявних експертних даних. Кожен крок оптимізації буде промаркований відповідним підпунктом у наступному розділі.
+
+\section*{Хід дослідження}
+\addcontentsline{toc}{section}{Хід дослідження}
+
+\subsection{Ініціалізація експертних даних}
+
+В рамках роботи було згенеровано $M=5$ індивідуальних матриць мультиплікативних парних порівнянь кожного експерта групи над $N=5$ альтернативами. Відповідні зворотно-симетричні матриці наведені нижче:
+
+\begin{table}[H]
+    \begin{minipage}[H]{0.49\linewidth}\centering
+        \begin{tblr}{
+                hline{2}={1pt,solid},
+                vline{2}={1pt,solid},
+                colspec={cccccc},
+                row{1-6}={mode=math},
+            }
+            
+              & 1   & 2   & 3   & 4   & 5 \\
+            1 & 1   & 5   & 8   & 5   & 5 \\
+            2 & 1/5 & 1   & 2   & 2   & 2 \\
+            3 & 1/8 & 1/2 & 1   & 2   & 3 \\
+            4 & 1/5 & 1/2 & 1/2 & 1   & 3 \\
+            5 & 1/5 & 1/2 & 1/3 & 1/3 & 1 \\
+
+        \end{tblr} \\ \vspace{0.5cm} \centering Матриця $E_1$ експерта №$1$
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.49\linewidth}\centering
+        \begin{tblr}{
+                hline{2}={1pt,solid},
+                vline{2}={1pt,solid},
+                colspec={cccccc},
+                row{1-6}={mode=math},
+            }
+            
+              & 1   & 2   & 3   & 4   & 5 \\
+            1 & 1   & 7   & 6   & 7   & 7 \\
+            2 & 1/7 & 1   & 3   & 3   & 2 \\
+            3 & 1/6 & 1/3 & 1   & 3   & 3 \\
+            4 & 1/7 & 1/3 & 1/3 & 1   & 3 \\
+            5 & 1/7 & 1/2 & 1/3 & 1/3 & 1 \\
+
+        \end{tblr} \\ \vspace{0.5cm} \centering Матриця $E_2$ експерта №$2$
+    \end{minipage}
+    \label{table: 1-2 experts matrices}
+\end{table}
+
+\begin{table}[H]
+    \begin{minipage}[H]{0.49\linewidth}\centering
+        \begin{tblr}{
+                hline{2}={1pt,solid},
+                vline{2}={1pt,solid},
+                colspec={cccccc},
+                row{1-6}={mode=math},
+            }
+            
+              & 1   & 2   & 3   & 4   & 5 \\
+            1 & 1   & 3   & 5   & 6   & 3 \\
+            2 & 1/3 & 1   & 2   & 3   & 3 \\
+            3 & 1/5 & 1/2 & 1   & 2   & 2 \\
+            4 & 1/6 & 1/3 & 1/2 & 1   & 3 \\
+            5 & 1/3 & 1/3 & 1/2 & 1/3 & 1 \\
+
+        \end{tblr} \\ \vspace{0.5cm} \centering Матриця $E_3$ експерта №$3$
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.49\linewidth}\centering
+        \begin{tblr}{
+                hline{2}={1pt,solid},
+                vline{2}={1pt,solid},
+                colspec={cccccc},
+                row{1-6}={mode=math},
+            }
+            
+              & 1   & 2   & 3   & 4   & 5 \\
+            1 & 1   & 5   & 2   & 2   & 4 \\
+            2 & 1/5 & 1   & 3   & 2   & 2 \\
+            3 & 1/2 & 1/3 & 1   & 2   & 2 \\
+            4 & 1/2 & 1/2 & 1/2 & 1   & 3 \\
+            5 & 1/4 & 1/2 & 1/2 & 1/3 & 1 \\
+
+        \end{tblr} \\ \vspace{0.5cm} \centering Матриця $E_4$ експерта №$4$
+    \end{minipage}
+    \label{table: 3-4 experts matrices}
+\end{table}
+
+\begin{table}[H]\centering
+    \begin{tblr}{
+            hline{2}={1pt,solid},
+            vline{2}={1pt,solid},
+            colspec={cccccc},
+            row{1-6}={mode=math},
+        }
+
+          & 1   & 2   & 3   & 4   & 5 \\
+        1 & 1   & 2   & 3   & 3   & 1 \\
+        2 & 1/2 & 1   & 3   & 3   & 2 \\
+        3 & 1/3 & 1/3 & 1   & 2   & 2 \\
+        4 & 1/3 & 1/3 & 1/2 & 1   & 3 \\
+        5 & 1   & 1/2 & 1/2 & 1/3 & 1 \\
+
+    \end{tblr} \\ \vspace{0.5cm} \centering Матриця $E_5$ експерта №$5$
+\label{table: 5 experts matrices}
+\end{table}
+
+При цьому коефіцієнти компетентності експертів задані так:
+\begin{equation}\label{eq: experts competency}
+    w = (0.56,\, 0.51,\, 0.46,\, 0.26,\, 0.64)
+\end{equation}
+
+\subsection{Обчислення коефіцієнта узгодженості CR для кожного експерта}
+
+Коефіцієнт узгодженості CR (consistency ratio) надає можливість визначити рівень того, наскільки експерт суперечить сам собі, вказуючи ті чи інші порівняльні оцінки в матрицю мультиплікативних порівнянь. Перш за все, аналізуючи задані у попередньому підпункті матриці $E_1,E_2,E_3,E_4,E_5$ експертів, визначимо максимальне дійсне значення власного числа для кожної з цих матриць:  
+\begin{equation}\label{eq: eigenvalues}
+    \lambda_{max} = (\lambda_{max}^1,\, \lambda_{max}^2,\, \lambda_{max}^3,\, \lambda_{max}^4,\, \lambda_{max}^5) = (5.387,\, 5.547,\, 5.379,\, 5.549,\, 5.559)
+\end{equation}
+Відтак, значення коефіцієнта CR для кожного експерта визначатиметься як 
+\begin{equation}\label{eq: CR}
+    CR_i = \frac{CI_i}{RI},\ i=\overline{1,M},
+\end{equation}
+де значення CI (consistency index) обчислюється через відповідні власні числа~\eqref{eq: eigenvalues}:  
+\begin{equation}\label{eq: CI}
+    CI_i = \frac{\lambda_{max}^{i} - N}{N-1},\ i=\overline{1,M},
+\end{equation}
+а коефіцієнт RI (ratio index) задається за заданою кількістю альтернатив $N:$
+\begin{table}[H]\centering
+    \begin{tblr}{
+            hline{2}={1pt,solid},
+            vline{2-11}={1pt,solid},
+            colspec={X[c]X[c]X[c]X[c]X[c]X[c]X[c]X[c]X[c]X[c]X[c]},
+            row{1-2}={mode=math},
+        }
+        
+        N  & 1   & 2   & 3    & 4   & 5    & 6    & 7    & 8    & 9    & 10   \\
+        RI & 0.0 & 0.0 & 0.58 & 0.9 & 1.12 & 1.24 & 1.32 & 1.41 & 1.45 & 1.49 \\
+
+    \end{tblr}
+    \caption{Значення коефіцієнта RI}
+    \label{table: RI values}
+\end{table}
+
+\newpage
+Таким чином, коефіцієнти узгодженості CR для групи експертів матимуть такі значення:
+\begin{equation}\label{eq: CR values}
+    CR = (CR_1,\, CR_2,\, CR_3,\, CR_4,\, CR_5) = (0.086,\, 0.122,\,  0.085,\, 0.123,\, 0.125)
+\end{equation}
+
+Індекси узгодженості вважаються прийнятними, якщо їхні значення лежать в межах $10\%$~\cite{DwiPutra2018}. Оскільки матриці експертів генерувалися випадковим чином, отримані коефіцієнти~\eqref{eq: CR values} можна вважати низькими.
+
+\subsection{Обчислення вектора пріоритетів альтернатив для кожного експерта}
+
+Існує декілька різних способів~\cite{Saaty1990} обчислення вектора ваг (пріоритетів) альтернатив для індивідуальних матриць мультиплікативних парних порівнянь. У лабораторній роботі буде використано такий алгоритм дій: підсумовувати елементи кожного стовпця та отримати обернені величини цих сум. Відповідні нормалізовані вектори ваг альтернатив для матриць експертів, заданих на стр.~\pageref{table: 1-2 experts matrices}, наведені нижче:
+\begin{align}
+    & \vartheta_1 = (0.60,\, 0.14,\, 0.09,\, 0.10,\, 0.07) \label{eq: eigenvector for expert 1} \\
+    & \vartheta_2 = (0.65,\, 0.11,\, 0.10,\, 0.07,\, 0.07) \label{eq: eigenvector for expert 2} \\
+    & \vartheta_3 = (0.51,\, 0.20,\, 0.12,\, 0.08,\, 0.09) \label{eq: eigenvector for expert 3} \\
+    & \vartheta_4 = (0.45,\, 0.15,\, 0.16,\, 0.15,\, 0.09) \label{eq: eigenvector for expert 4} \\
+    & \vartheta_5 = (0.35,\, 0.26,\, 0.14,\, 0.12,\, 0.13) \label{eq: eigenvector for expert 5}
+\end{align} 
+
+\subsection{Обчислення агрегованого вектора альтернатив для групи експертів}
+\label{section: merged eigenvector}
+
+Агрегований результуючий вектор альтернатив для групи експертів обчислено шляхом поелементного усереднення відповідних векторів альтернатив~\eqref{eq: eigenvector for expert 1}-\eqref{eq: eigenvector for expert 5} кожного експерта за допомогою зваженого середнього геометричного, де в якості ваг виступають відповідні коефіцієнти компетентностей експертів~\eqref{eq: experts competency}:
+\begin{equation}\label{eq: gmean}
+    \vartheta = \left( \left[ \prod\limits_{i=1}^{M} \vartheta_{i}^{w_i} \right]^{1 \bigl/ \sum\limits_{k=1}^{M} w_k} \bigr. \right)_{j=\overline{1,N}}
+\end{equation}
+
+Таким чином, нормалізований агрегований вектор ваг матиме такий вигляд:
+\begin{equation}\label{eq: gmean value}
+    \vartheta = (0.51,\, 0.18,\, 0.12,\, 0.10,\, 0.09)
+\end{equation}
+
+\subsection{Побудова спектрів значень ваг альтернатив}
+
+Спектри значень ваг альтернатив побудовані як гістограми компонент кожної альтернативи у векторах~\eqref{eq: eigenvector for expert 1}-\eqref{eq: eigenvector for expert 5} на проміжку значень $[0,1]$. Для порівняльного аналізу на кожен утворений спектр червоним кольором нанесена вага відповідної альтернативи в агрегованому векторі альтернатив~\eqref{eq: gmean value}:
+
+\begin{figure}[H]\centering
+    \input{Tikzplots/alternative 1 spectrum.tikz}
+    \caption{Спектр альтернативи №$1$}
+    \label{pic: alternative 1 spectrum}
+\end{figure}
+
+\begin{figure}[H]\centering
+    \input{Tikzplots/alternative 2 spectrum.tikz}
+    \caption{Спектр альтернативи №$2$}
+    \label{pic: alternative 2 spectrum}
+\end{figure}
+
+\begin{figure}[H]\centering
+    \input{Tikzplots/alternative 3 spectrum.tikz}
+    \caption{Спектр альтернативи №$3$}
+    \label{pic: alternative 3 spectrum}
+\end{figure}
+
+\begin{figure}[H]\centering
+    \input{Tikzplots/alternative 4 spectrum.tikz}
+    \caption{Спектр альтернативи №$4$}
+    \label{pic: alternative 4 spectrum}
+\end{figure}
+
+\begin{figure}[H]\centering
+    \input{Tikzplots/alternative 5 spectrum.tikz}
+    \caption{Спектр альтернативи №$5$}
+    \label{pic: alternative 5 spectrum}
+\end{figure}
+
+\subsection{Обчислення групової узгодженості (Double Entropy)}
+
+Коефіцієнт Double Entropy характеризує дисперсію спектру альтернативи у двох показниках: розкид відстані між ненульовими стовпчиками спектру $i_1,i_2,\ldots,i_k:$ 
+\begin{align}
+    & d_j = i_{j+1} - i_{j},\ j=\overline{1,k-1} \\
+    & d_k =
+    \begin{cases*}
+        (n-1) + (i_1-i_k) + \left[ \frac{n-1}{k-1} \right], & k > 1 \\
+        n,                                                   & k = 1 \\
+    \end{cases*},
+\end{align}
+які після шкалювання нормуючим множником $d=\sum\limits_{j=1}^{k} d_j$ отримують значення
+\begin{equation}
+    p_j=\frac{d_j}{d},\ j=\overline{1,k},
+\end{equation}
+та, крім того, дисперсія спектру визначається розкидом висот $r_1,r_2,\ldots,r_k$ ненульових стовпців спектру:
+\begin{equation}
+    q_j=\frac{r_j}{\sum\limits_{j=1}^{k} r_j},\ j=\overline{1,k},
+\end{equation}
+
+\newpage
+Використовуючи отримані характеристики $p$ та $q$, вводиться поняття ентропії неузгодженості
+\begin{equation}\label{eq: H(P)}
+    H(P)=-\sum\limits_{j=1}^{k} p_j\ln{p_j}
+\end{equation}
+та поняття ентропії непередбачуваності
+\begin{equation}\label{eq: H(Q)}
+    H(Q)=-\sum\limits_{j=1}^{k} q_j\ln{q_j}
+\end{equation}
+
+Після процедури шкалювання~\cite[додаток <<Supplemental Material>>]{Olenko2015} цих величин у проміжку $[0,1]$, отримані індекси $H^*(P)$ та $H^*(Q)$ дозволяють обчислити коефіцієнт групової узгодженості щодо альтернативи: 
+\begin{equation}\label{eq: DE}
+    \kappa(P,Q) = 1 - \frac{H^*(P) + H^*(Q)}{2}
+\end{equation}
+
+Виконавши процедуру обчислення коефіцієнта Double Entropy~\eqref{eq: DE} на основі спектрів на Рис.~\ref{pic: alternative 1 spectrum} -- Рис.~\ref{pic: alternative 5 spectrum}, отримуємо такі індекси узгодженості для кожної альтернативи:
+\begin{equation}\label{eq: DE value}
+    \kappa(P,Q) = (0.086,\, 0.791,\, 0.791,\, 0.791,\, 0.845)
+\end{equation}
+
+Чим ближче коефіцієнт $\kappa(P,Q)$ до одиниці, ти більш узгодженою є група експертів щодо тієї чи іншої альтернативи. Бачимо, що стосовно альтернативи №$1$ група експертів має найменш узгоджену ситуацію. При цьому, провівши аналіз спектру альтернативи (Рис.~\ref{pic: alternative 5 spectrum}), виявляємо, що найбільш відмінною є оцінка експерта №$5$. 
+
+\subsection{Обчислення ідеальної транзитивної матриці}
+
+На основі визначеного в підрозділі~\ref{section: merged eigenvector} агрегованого результуючого вектору ваг альтернатив $\vartheta$, побудуємо так звану ідеальну транзитивну матрицю парних порівнянь:
+
+\begin{table}[H]\centering
+    \begin{tblr}{
+            hline{2}={1pt,solid},
+            vline{2}={1pt,solid},
+            colspec={cccccc},
+            row{1-6}={mode=math},
+        }
+
+          & 1    & 2    & 3    & 4    & 5    \\
+        1 & 1    & 2.92 & 4.39 & 5.05 & 5.56 \\
+        2 & 0.34 & 1    & 1.51 & 1.73 & 1.91 \\
+        3 & 0.22 & 0.66 & 1    & 1.15 & 1.26 \\
+        4 & 0.19 & 0.57 & 0.86 & 1    & 1.10 \\
+        5 & 0.18 & 0.52 & 0.78 & 0.91 & 1    \\
+
+    \end{tblr} \\ \vspace{0.5cm} \centering Ідеальна транзитивна матриця $T$
+\label{table: T matrix}
+\end{table}
+яка обчислюється таким чином:
+\begin{equation}\label{eq: T}
+    T_{ij}=\left( \frac{\vartheta_i}{\vartheta_j} \right)_{i,j=\overline{1,N}}
+\end{equation}
+
+Наступним кроком обчислимо абсолютні відстані між матрицею $E_5$ експерта №$5$ та ідеальною матрицею мультиплікативних порівнянь $T:$
+
+\begin{table}[H]\centering
+    \begin{tblr}{
+            hline{2}={1pt,solid},
+            vline{2}={1pt,solid},
+            colspec={cccccc},
+            row{1-6}={mode=math},
+        }
+
+          & 1    & 2    & 3    & 4    & 5    \\
+        1 & 0    & 0.92 & 1.39 & 2.05 & 4.56 \\
+        2 & 0.15 & 0    & 1.49 & 1.26 & 0.09 \\
+        3 & 0.10 & 0.33 & 0    & 0.84 & 0.73 \\
+        4 & 0.13 & 0.24 & 0.36 & 0    & 0.89 \\
+        5 & 0.82 & 0.02 & 0.28 & 0.41 & 0    \\
+
+    \end{tblr} \\ \vspace{0.5cm} \centering Покомпонентна різниця матриць $E_5$ та $T$
+\label{table: T-E5 matrix}
+\end{table}
+
+Бачимо, що компонент $e_{15}$ матриці $E_5$ має найбільш відмінне значення по модулю відносно матриці $T$. Тож запропонуємо експертові №$5$ збільшити свою оцінку $e_{15}$ задля підвищення узгодженості. Припустимо при цьому, що експерт відмовився змінювати свою оцінку, тож замінимо вручну елемент $e_{15}$ на значення оцінки $t_{15}$, округлене до цілочисельного значення.
+
+Повторивши цикл обчислення коефіцієнта узгодженості Double Entropy~\eqref{eq: DE} на основі оновлених експертних даних, отримаємо такі значення:
+
+\begin{table}[H]\centering
+    \begin{tblr}{
+            hline{2}={1pt,solid},
+            vline{2}={1pt,solid},
+            colspec={cccccc},
+            row{1-6}={mode=math},
+        }
+
+                          & 1     & 2     & 3     & 4     & 5     \\
+        \kappa(P,Q)_{old} & 0.086 & 0.791 & 0.791 & 0.791 & 0.845 \\
+        \kappa(P,Q)_{new} & 0.086 & 0.791 & 0.791 & 0.791 & 1.0   \\
+
+    \end{tblr} \\ \vspace{0.5cm} \centering Ітерація оновлення коефіцієнта Double Entropy
+\label{table: DE renew}
+\end{table}
+
+\subsection{Проведення процедури зворотного зв'язку}
+
+Отримавши оновлений вектор коефіцієнта групової узгодженості, знову проведемо цикл оптимізації, запропонувавши змінити елемент матриці того експерта, який має найбільш віддалений показник спектру найменш узгодженої альтернативи групи згідно зі значеннями оновленого вектора коефіцієнтів Double Entropy. Проводитимо процедуру оптимізації та переоцінки доти, доки усі коефіцієнти групової узгодженості не будуть перевищувати $75\%:$
+
+\begin{table}[H]\centering
+    \begin{tblr}{
+            hline{2}={1pt,solid},
+            vline{2}={1pt,solid},
+            colspec={cccccc},
+            row{1-16}={mode=math},
+        }
+
+                         & 1     & 2     & 3     & 4     & 5     \\
+        \kappa(P,Q)_{0}  & 0.086 & 0.791 & 0.791 & 0.791 & 0.845 \\
+        \kappa(P,Q)_{1}  & 0.086 & 0.791 & 0.791 & 0.791 & 1.0   \\
+        \kappa(P,Q)_{2}  & 0.086 & 0.791 & 0.791 & 0.791 & 1.0   \\
+        \kappa(P,Q)_{3}  & 0.086 & 0.791 & 0.791 & 0.791 & 1.0   \\
+        \kappa(P,Q)_{4}  & 0.086 & 0.791 & 0.791 & 0.791 & 1.0   \\
+        \kappa(P,Q)_{5}  & 0.086 & 0.791 & 0.791 & 0.791 & 1.0   \\
+        \kappa(P,Q)_{6}  & 0.672 & 0.791 & 0.791 & 0.791 & 1.0   \\
+        \kappa(P,Q)_{7}  & 0.672 & 0.791 & 0.791 & 0.791 & 1.0   \\
+        \kappa(P,Q)_{8}  & 0.672 & 0.791 & 0.791 & 0.791 & 1.0   \\
+        \kappa(P,Q)_{9}  & 0.672 & 0.791 & 0.791 & 0.791 & 1.0   \\
+        \kappa(P,Q)_{10} & 0.705 & 0.791 & 0.791 & 0.791 & 1.0   \\
+        \kappa(P,Q)_{11} & 0.705 & 0.791 & 0.791 & 0.791 & 1.0   \\
+        \kappa(P,Q)_{12} & 0.705 & 0.791 & 0.791 & 0.791 & 1.0   \\
+        \kappa(P,Q)_{13} & 0.705 & 0.791 & 0.791 & 0.791 & 1.0   \\
+        \kappa(P,Q)_{14} & 0.845 & 0.791 & 0.791 & 0.791 & 1.0   \\
+
+    \end{tblr} \\ \vspace{0.5cm} \centering $14$ ітерацій оновлення коефіцієнта Double Entropy
+\label{table: DE 14 renew ietrations}
+\end{table}
+
+\section*{Висновки}
+\addcontentsline{toc}{section}{Висновки}
+
+На основі аналізу згенерованих матриць мультиплікативних парних порівнянь групи з $M=5$ експертів над $N=5$ альтернативами було встановлено декілька результатів. Перш за все, виявлено, що рівень індивідуальної узгодженості експертів CR є прийнятним в межах певного невеликого відхилення. Подальший аналіз спектрів значень альтернатив продемонстрував, що альтернатива №$1$ є найменш узгодженою серед групи експертів. В якості критерію оптимальності було використано коефіцієнти Double Entropy щодо групової узгодженості по альтернативах. 
+
+Провівши процес переоцінки відповідних компонент матриці експерта, який має найбільш віддалений показник спектру по найменш узгодженій альтернативі групи, вдалося отримати вищі значення коефіцієнтів групової узгодженості. Наостанок, після проведення процедури зворотного зв'язку було визначено, що за $14$ ітерацій циклу оптимізації експертних даних можна досягнути бажаного рівня узгодженості~--- вище $75\%$.  
+
+\newpage
+\printbibliography[title={Перелік посилань}] % \nocite{*}
+\addcontentsline{toc}{section}{Перелік посилань}
+
+\end{document}

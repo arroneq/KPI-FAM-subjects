@@ -1,0 +1,53 @@
+\begin{tikzpicture}
+    \begin{axis}[
+        height = 0.5\linewidth,
+        width = 0.85\linewidth,
+        xlabel={Координата балки $s$},
+        ylabel={Значення переміщення $W(s)$},
+        scale only axis,
+        scaled y ticks=false,
+        xmin=-5, xmax=105,
+        ymin=-1125, ymax=2125, 
+        % ytick distance=0.001,
+        % yticklabel style={
+        %     /pgf/number format/.cd,
+        %     fixed,
+        %     precision=3
+        % }, % set fixed precision of 2 decimal places
+        grid=both,
+        grid style={draw=gray!30},
+        minor grid style={draw=gray!10},
+        minor x tick num=3,
+        minor y tick num=3,
+        reverse legend,
+        legend style={                       % customize the legend style
+            at={(0.95,0.95)},                % position the legend at the top right corner of the plot
+            font=\small,                     % set the font size of the legend
+            anchor=north east,               % anchor the legend to the north east corner
+            cells={anchor=west}              % align the legend text to the left
+        },
+    ]
+        \addplot[gray!50, dash pattern={on 7pt off 4pt}, line width=1pt, forget plot] table {
+            -10 0
+            110 0
+        };
+
+        \addplot[black!80, line width=2pt] table {Data/WRM (M=5).txt};
+        \addlegendentry{\ Метод МЗЗ $(M=5)$}
+        \addplot[purple!80, line width=2pt] table {Data/WRM (M=4).txt};
+        \addlegendentry{\ Метод МЗЗ $(M=4)$}
+        \addplot[green!60!black, line width=2pt] table {Data/WRM (M=3).txt};
+        \addlegendentry{\ Метод МЗЗ $(M=3)$}
+        \addplot[orange!80, line width=2pt] table {Data/WRM (M=2).txt};
+        \addlegendentry{\ Метод МЗЗ $(M=2)$}
+        \addplot[blue!80, line width=2pt] table {Data/TMM.txt};
+        \addlegendentry{\ Метод МПП}
+
+        \addplot[blue!80, only marks, mark=*, mark size=3pt, forget plot] table {
+            0 0
+            50 0
+            100 0
+        };
+
+    \end{axis}
+\end{tikzpicture}

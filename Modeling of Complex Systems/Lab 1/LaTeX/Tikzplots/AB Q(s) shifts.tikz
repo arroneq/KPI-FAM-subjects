@@ -1,0 +1,34 @@
+\begin{tikzpicture}
+    \begin{axis}[
+        height=0.45\linewidth,
+        width=0.85\linewidth,
+        xlabel={Ітерація $i$ уточнення базового значення потоку},
+        ylabel={Поправочне значення потоку $Q^{i}_{\Delta}(s)$},
+        scale only axis,
+        scaled y ticks=false,
+        xmin=-50, xmax=1050,
+        % ymin=-2.75, ymax=5.5, 
+        % ytick distance=0.001,
+        xticklabel style={
+            /pgf/number format/.cd,
+            1000 sep={},
+        },
+        % yticklabel style={
+        %     /pgf/number format/.cd,
+        %     fixed,
+        %     precision=3
+        % }, % set fixed precision of 2 decimal places
+        grid=both,
+        grid style={draw=gray!30},
+        minor grid style={draw=gray!10},
+        minor x tick num=3,
+        minor y tick num=3,
+    ]
+        \addplot[gray!50, dash pattern={on 7pt off 4pt}, line width=1pt, forget plot] table {
+            -100 0
+            1100 0
+        };
+        \addplot[blue!80, line width=1.5pt] table {Data/AB Q(s) shifts.txt};
+
+    \end{axis}
+\end{tikzpicture}

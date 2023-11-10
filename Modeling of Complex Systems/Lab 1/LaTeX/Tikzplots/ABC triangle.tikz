@@ -1,0 +1,30 @@
+\begin{tikzpicture}
+    \pgfmathsetmacro{\a}{4}
+
+    % apexes
+    \coordinate[label=below left:{$A$}] (A) at (210:\a);
+    \coordinate[label=below right:{$B$}] (B) at (-30:\a);
+    \coordinate[label=above:{$C$}] (C) at (90:\a);
+
+    % element labels
+    \node[draw,rectangle] (P1) at (-90:\a/2) {1};
+    \node[draw,rectangle] (P2) at (30:\a/2) {2};
+    \node[draw,rectangle] (P3) at (150:\a/2) {3};
+
+    % AB side
+    \draw[line width=1.25pt] (A) -- (P1);
+    \draw[-{Stealth[scale=1.2]}, shorten >= 3pt, line width=1.25pt] (P1) -- (B);
+
+    % BC side
+    \draw[line width=1.25pt] (B) -- (P2);
+    \draw[-{Stealth[scale=1.2]}, shorten >= 3pt, line width=1.25pt] (P2) -- (C);
+
+    % CA side
+    \draw[line width=1.25pt] (C) -- (P3);
+    \draw[-{Stealth[scale=1.2]}, shorten >= 3pt, line width=1.25pt] (P3) -- (A);
+
+    % mark blue points in each apex
+    \foreach \point in {A,B,C}{
+        \fill[blue] (\point) circle [radius=3pt];
+    }
+\end{tikzpicture}

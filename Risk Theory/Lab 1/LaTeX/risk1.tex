@@ -1,0 +1,205 @@
+% !TeX program = lualatex
+% !TeX encoding = utf8
+% !BIB program = biber
+% !TeX spellcheck = uk_UA
+
+\documentclass{mathreport}
+\input{packages}
+
+\begin{document}
+
+\ReportPreamble{Лабораторна робота №1}
+\ReportName{Статична модель страхування від COVID-19}
+\ReportSubject{Методи теорії надійності та ризику}
+
+\AuthorInfo{Студент 5 курсу, групи КМ-31мн,}
+\AuthorName{Цибульник Антон Владиславович}
+
+\SupervisorInfo{Професор кафедри ПМА,}
+\SupervisorName{Норкін Володимир Іванович}
+
+% warning: in order to fit the text in the very right side of a page, set the longest label
+\TheLongestLabel{Цибульник Антон Владиславович}
+
+\import{Title/}{title}
+
+\tableofcontents
+
+\newpage
+
+\section*{Постановка задачі}
+\addcontentsline{toc}{section}{Постановка задачі}
+
+Нехай деяка страхова компанія уклала з $N$ клієнтами містечка з населенням $L$ мешканців договори на захист від захворювання COVID-19 (з госпіталізацією) строком на один рік. Відомо, що щодня у місті в середньому хворіють $M$ людей, а $\alpha \in (0,1)$ --- частина з них, яка потребує госпіталізації. 
+
+Вартість стандартного стаціонарного лікування одного пацієнта складає $K$ умовних одиниць. Завдання полягає у пошуку справедливої ціни на річну страховку від COVID-19.
+
+\section*{Варіант завдання}
+\addcontentsline{toc}{section}{Варіант завдання}
+
+Згідно з порядковим номером у групі $n=3$, параметр загального капіталу компанії на рік $U$, найменша можлива ймовірність банкрутства $\varepsilon$, значення квантиля $q$, тестове значення ціни страховки $\pi^*$, а також перелічені у попередньому розділі величини визначатимуться так:
+
+\begin{table}[H]\centering
+    \begin{tblr}{
+            % hlines={0.5pt,solid}, 
+            % vlines={1pt,solid},
+            colspec={X[c]|X[c]|X[c]|X[c]|X[c]|X[c]|X[c]|X[c]|X[c]},
+            row{1-3}={mode=math},
+        }
+        
+        N   & M      & L        & K      & U    & \alpha        & \varepsilon   & q              & \pi^* \\
+        \hline
+        10n & 10^3 n & 10^6 n^2 & 10^3 n & 10^4 & \frac{1}{n+1} & \frac{1}{n+1} & 1-\frac{1}{n+1} & K/N  \\
+        \hline
+        30  & 3000   & 9 \cdot 10^6 & 3000 & 10^4 & 0.25 & 0.25 & 0.75 & 100  \\
+
+    \end{tblr}
+    \caption{Значення параметрів системи}
+    \label{table: initial values of parameters}
+\end{table}
+
+\section*{Хід дослідження}
+\addcontentsline{toc}{section}{Хід дослідження}
+
+\subsection{Ймовірність мешканця міста захворіти протягом року}
+
+Оскільки $M$ --- середня кількість хворих на день, то для одного з $L$ мешканців міста ймовірність захворіти протягом одного дня складає $M/L$. Відтак через незалежність цих подій з дня до дня, ймовірність бути здоровим протягом усього року дорівнює такому добутку ймовірностей: $(1-\frac{M}{L})^{365}$. Імовірність протилежної події вказуватиме шукану ймовірність мешканця міста захворіти протягом року:
+\begin{equation}\label{eq: p probability}
+    p = 1-\left( 1-\frac{M}{L} \right)^{365}
+\end{equation}
+
+\subsection{Ймовірнісний розподіл витрачених компанією грошей протягом року}
+
+Перш за все, розглядатимемо події хвороби одного з $N$ клієнтів компанії як серію незалежних експериментів. Тоді розподіл випадкової величини $\xi$ як кількості хворих клієнтів компанії протягом року буде підпорядковуватися біноміальному розподілу з параметрами $N$ та $p:$
+\begin{equation}\label{eq: r.v. xi}
+    \xi \sim Bin(N,p)
+\end{equation}
+
+Однак страхова компанія має зобов'язання виключно перед $\alpha$-часткою хворих осіб, які потребують госпіталізації. Отже, ввівши випадкову величину $\eta$ як кількість госпіталізованих клієнтів компанії протягом року, отримаємо біноміальний розподіл із такими параметрами:
+\begin{equation}\label{eq: r.v. eta}
+    \eta \sim Bin(N,\alpha p)
+\end{equation}
+
+Підставляючи значення параметрів згідно з варіантом, отримуємо величини $N=30$, $p=0.1146$ та $\alpha=0.25$. Графік функції розподілу випадкової величини $\eta$ зображений на Рис. \ref{pic: eta distribution}. 
+\begin{figure}[H]\centering
+    \input{Tikzplots/eta distribution.tikz}
+    \caption{Функція розподілу випадкової величини $\eta \sim Bin(30,0.0287)$}
+    \label{pic: eta distribution}
+\end{figure}
+
+\newpage
+З графіка бачимо, що, оскільки ймовірність захворіти $p$ на додачу до відсотка госпіталізованих $\alpha$ є малими, функція розподілу зростає стрімко. Іншими словами, при заданих параметрах спостерігаємо високу ймовірність того, що хворих клієнтів буде небагато.
+
+Повертаючись до завдання підрозділу: враховуючи ціну $K$ стаціонарного лікування від COVID-19, випадкова величина $K\eta$ задаватиме кількість витрачених компанією грошей протягом року. Функція розподілу цієї величини матиме вигляд:
+\begin{equation}\label{eq: K eta cdf part 1}
+    F_{K\eta}\left( y \right) = P\left( K\eta \leqslant y \right) = P\left( \eta \leqslant \frac{y}{k} \right) = F_{\eta}\left( \frac{y}{K} \right) 
+\end{equation}
+
+Враховуючи вигляд функції розподілу $\eta$, матимемо:
+\begin{equation}\label{eq: K eta cdf part 2}
+    F_{K\eta}\left( y \right) = \sum_{k=1}^{\lfloor y/K \rfloor} C_N^k (p\alpha)^{k} (1-p\alpha)^{N-k} 
+\end{equation}
+
+\subsection{Математичне сподівання, стандартне відхилення та \linebreak $q$-квантиль кількості витрачених компанією грошей}
+
+Шукані характеристики випадкової величини $K\eta$ задаватимуться так:
+\begin{align}
+    & M(K\eta) = K M\eta = KNp\alpha\\
+    & \sqrt{D(K\eta)} = \sqrt{K^2 D\eta} = \sqrt{K^2Np\alpha(1-p\alpha)}\\
+    & F_{K\eta}(y) = q \ \Longrightarrow \ y=F_{K\eta}^{-1}(q)
+\end{align}
+
+Враховуючи значення необхідних параметрів з Табл. \ref{table: initial values of parameters}, отримуємо: 
+
+\begin{table}[H]\centering
+    \begin{tblr}{
+            % hlines={0.5pt,solid}, 
+            % vlines={1pt,solid},
+            colspec={c|c|c},
+            row{1-2}={mode=math},
+        }
+        
+        M(K\eta)   & \sqrt{D(K\eta)}      & 75\%\text{-ий квантиль} \\
+        \hline
+        2\;583 & 2\;743.47 & 1 \\
+
+    \end{tblr}
+    \caption{Числові характеристики випадкової величини $K\eta$}
+    \label{table: characteristics of r.v. K eta}
+\end{table}
+
+\subsection{Середня кількість витрачених на одного клієнта грошей}
+
+Відштовхуючись від того, що $K\eta$ задає кількість витрачених компанією грошей протягом року, тоді $M(K\eta)$ --- середня кількість витрачених компанією грошей на усіх своїх клієнтів, а відтак витрати на одного клієнта складатимуть:
+\begin{equation}\label{eq: expenses per client}
+    \frac{M(K\eta)}{N} = Kp\alpha = 86.1 
+\end{equation}
+
+\subsection{Ймовірність страхової компанії збанкрутіти протягом року}
+
+Задано, що загальний капітал компанії на рік складає $U$ умовних одиниць, а ціна страховки при цьому --- $\pi^*$ умовних одиниць. Із цього випливає, що на додачу до наявного капіталу компанія отримає від $N$ клієнтів ще $N\pi^*$ умовних одиниць. Таким чином, імовірність банкрутства формулюватиметься як імовірність перевищення кількості витрачених компанією грошей протягом року $K\eta$ над сумарними збереженнями компанії $U+N\pi^*:$
+\begin{equation}\label{eq: bankruptcy probability}
+    P\left( K\eta > U+N\pi^* \right) = 1 - P\left( K\eta \leqslant U+N\pi^* \right) = 1 - F_{\eta}\left( \frac{U+N\pi^*}{K} \right)
+\end{equation}
+
+Підставляючи значення з Табл. \ref{table: initial values of parameters}, імовірність банкрутства дорівнюватиме:
+\begin{equation}\label{eq: bankruptcy probability value}
+    P\left( K\eta > U+N\pi^* \right) = 0.0015
+\end{equation}
+
+\subsection{Оптимальна ціна страховки при заданій граничній імовірності банкрутства}
+
+Аналогічними до попереднього підрозділу міркуваннями приходимо до рівняння пошуку оптимальної ціни страховки $\widehat{\pi}$ при заданій граничній імовірності банкрутства $\varepsilon:$
+\begin{equation}\label{eq: optimal policy price part 1}
+    P\left( K\eta > U+N\widehat{\pi} \right) \leqslant \varepsilon
+\end{equation}
+
+Таким чином 
+\begin{equation}\label{eq: optimal policy price part 2}
+    1 - F_{\eta}\left( \frac{U+N\widehat{\pi}}{K} \right) \leqslant \varepsilon
+\end{equation}
+
+В результаті
+\begin{equation}\label{eq: optimal policy price part 3}
+    \widehat{\pi} \geqslant \frac{KF_{\eta}^{-1}(1-\varepsilon) - U}{N}
+\end{equation} 
+
+Зважаючи на те, що згідно з отриманим результатом \eqref{eq: bankruptcy probability value} імовірність банкрутства є вкрай низькою при достатньо малому (відносно ціни стаціонарного лікування) значенні ціни страховки $\pi^*=100$ умовних одиниць, можна припустити, що навіть при безплатному страхуванні усіх клієнтів компанія матиме достатньо власного капіталу $U$ для того, щоб імовірність банкрутства не перевищувала $\varepsilon=0.25$.
+
+Тому в рамках дослідження пропонується відійти від заданого у початкових умовах відсотка госпіталізованих $\alpha=0.25$ та покласти натомість дещо інші умови у припущенні, що абсолютно кожному хворому клієнту буде надане страхування від COVID-19. 
+
+Іншими словами, нехай $\alpha=1$, тоді найменша оптимальна ціна страховки при заданій граничній імовірності банкрутства $\varepsilon$ складатиме:
+\begin{equation}\label{eq: optimal policy price value}
+    \widehat{\pi} \geqslant 166.6
+\end{equation} 
+
+\subsection{Залежність імовірності банкрутства від ціни страховки}
+
+Наостанок зобразимо на Рис. \ref{pic: bankruptcy probability distribution} залежність імовірності банкрутства \eqref{eq: bankruptcy probability} від ціни страховки:
+
+\begin{figure}[H]\centering
+    \input{Tikzplots/bankruptcy probability.tikz}
+    \caption{Залежність імовірності банкрутства від ціни страховки}
+    \label{pic: bankruptcy probability distribution}
+\end{figure}
+
+\section*{Програмна реалізація}
+\addcontentsline{toc}{section}{Програмна реалізація}
+
+В ході дослідження було використано засоби мови програмування \texttt{Python} версії \texttt{3.8.10} в інтегрованому середовищі розробки \texttt{Visual Studio Code} версії \texttt{1.78.2}. Нижче наведені тексти ключових інструментальних програм.
+
+\lstinputlisting[linerange={1-3}, caption={Підключення бібліотек}]{Code/code.py}
+
+\lstinputlisting[linerange={5-19}, caption={Ініціалізація параметрів}]{Code/code.py}
+
+\lstinputlisting[linerange={21-29}, caption={Побудова графіку функції розподілу випадкової величини $\eta$}]{Code/code.py}
+
+\lstinputlisting[linerange={31-38}, caption={Обчислення основних формул та імовірностей}]{Code/code.py}
+
+\lstinputlisting[linerange={40-48}, caption={Побудова залежності імовірності банкрутства від ціни страховки}]{Code/code.py}
+
+% \newpage
+% \printbibliography[title={Перелік посилань}] % \nocite{*}
+% \addcontentsline{toc}{subsection}{Перелік посилань}
+
+\end{document}

@@ -1,0 +1,27 @@
+\begin{tikzpicture}
+    \pgfmathsetmacro{\L}{6}
+    \pgfmathsetmacro{\ticklen}{0.125}
+
+    % element labels
+    % \node[draw,rectangle] (P1) at (-\L/2,0) {1};
+    % \node[draw,rectangle] (P2) at (\L/2,0) {2};
+
+    % main line (beam)
+    \draw[line width=2pt] (-\L,0) -- (\L,0);
+
+    % ticks
+    \draw[line width=2pt] (-\L,\ticklen) -- (-\L,-\ticklen);
+    \draw[line width=2pt] (-\L/2,\ticklen) -- (-\L/2,-\ticklen);
+    \draw[line width=2pt] (0,\ticklen) -- (0,-\ticklen);
+    \draw[line width=2pt] (\L,\ticklen) -- (\L,-\ticklen);
+
+    % labels
+    \coordinate[label=below:{$0$}] (E1) at (-\L,0);
+    \coordinate[label=above:{$L/2$}] (E2) at (-\L/2,0);
+    \coordinate[label=below:{$L$}] (E3) at (0,0);
+    \coordinate[label=below:{$2L$}] (E4) at (\L,0);
+
+    % force arrows
+    \draw[-{Stealth[scale=1.2]},shorten >= 7.5pt,line width=1.25pt] 
+        (-\L/2,-1.4) -- (E2) node[at start,below] {$\delta(s-L/2)$};
+\end{tikzpicture}

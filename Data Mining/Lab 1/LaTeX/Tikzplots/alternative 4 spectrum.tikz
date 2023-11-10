@@ -1,0 +1,46 @@
+\begin{tikzpicture}
+    \begin{axis}[
+        xlabel={Область значень ваг альтернатив},         
+        ylabel={Кількість значень в області},  
+        scale only axis,
+        ymin=0.0, ymax=5,                      % set 0.0 as a "floor" of the y-axis
+        xmin=0.0, xmax=1,
+        xtick distance=0.1,
+        % xticklabel style={
+        %     /pgf/number format/.cd,
+        %     fixed,
+        %     precision=2
+        % },                                      % set fixed precision of 2 decimal places
+        % yticklabel style={
+        %     /pgf/number format/.cd,
+        %     fixed,
+        %     precision=2
+        % },                                      % set fixed precision of 2 decimal places
+        grid=both,
+        grid style={draw=gray!30},
+        minor grid style={draw=gray!10},
+        xtick align=center,                     % align x-axis tick marks to the center of the bars
+        minor y tick num=3,
+        xmajorgrids=false,
+        xminorgrids=false,
+    ]
+        \addplot[
+            hist={bins=10},                      % set the plot as a hist plot
+            fill=blue!80, 
+            opacity=0.7,
+            % y filter/.expression={y/200},        % set y-axis as a density 
+        ] table [y=value] {
+            expert value 
+            1 0.10020591697925314
+            2 0.07252528677686644
+            3 0.08438235584556923
+            4 0.15033236747912052
+            5 0.11554015020219524
+        };
+
+        \addplot[red!80, line width=2pt] table {
+            0.1 -1
+            0.1 6
+        };
+    \end{axis}
+\end{tikzpicture}

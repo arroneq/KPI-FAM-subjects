@@ -1,0 +1,59 @@
+\begin{tikzpicture}
+    \pgfmathsetmacro{\a}{5}
+    \pgfmathsetmacro{\median}{sqrt(7)*\a/4}
+
+    % apexes
+    \coordinate[label=below left:{$A$}] (A) at (210:\a);
+    \coordinate[label=below right:{$B$}] (B) at (-30:\a);
+    \coordinate[label=above:{$C$}] (C) at (90:\a);
+    \coordinate[label=below right:{$D_0$}] (D0) at (0:0);
+    \coordinate[label=below:{$D_1$}] (D1) at (-90:\a/2);
+    \coordinate[label=above right:{$D_2 $}] (D2) at (30:\a/2);
+    \coordinate[label=above left:{$D_3$}] (D3) at (150:\a/2);
+
+    % element labels
+    \node[draw,rectangle] (P1) at (-130.89:\median) {1};
+    \node[draw,rectangle] (P2) at (-49.11:\median) {2};
+    \node[draw,rectangle] (P3) at (-10.89:\median) {3};
+    \node[draw,rectangle] (P4) at (70.89:\median) {4};
+    \node[draw,rectangle] (P5) at (109.11:\median) {5};
+    \node[draw,rectangle] (P6) at (190.89:\median) {6};
+    \node[draw,rectangle] (P7) at (270:\a/4) {7};
+    \node[draw,rectangle] (P8) at (30:\a/4) {8};
+    \node[draw,rectangle] (P9) at (150:\a/4) {9};
+
+    % AB side
+    \draw[line width=1.25pt] (A) -- (P1);
+    \draw[-{Stealth[scale=1.2]}, shorten >= 3pt, line width=1.25pt] (P1) -- (D1);
+    \draw[line width=1.25pt] (D1) -- (P2);
+    \draw[-{Stealth[scale=1.2]}, shorten >= 3pt, line width=1.25pt] (P2) -- (B);
+
+    % BC side
+    \draw[line width=1.25pt] (B) -- (P3);
+    \draw[-{Stealth[scale=1.2]}, shorten >= 3pt, line width=1.25pt] (P3) -- (D2);
+    \draw[line width=1.25pt] (D2) -- (P4);
+    \draw[-{Stealth[scale=1.2]}, shorten >= 3pt, line width=1.25pt] (P4) -- (C);
+
+    % CA side
+    \draw[line width=1.25pt] (C) -- (P5);
+    \draw[-{Stealth[scale=1.2]}, shorten >= 3pt, line width=1.25pt] (P5) -- (D3);
+    \draw[line width=1.25pt] (D3) -- (P6);
+    \draw[-{Stealth[scale=1.2]}, shorten >= 3pt, line width=1.25pt] (P6) -- (A);
+
+    % D1-D0 side
+    \draw[line width=1.25pt] (D1) -- (P7);
+    \draw[-{Stealth[scale=1.2]}, shorten >= 3pt, line width=1.25pt] (P7) -- (D0);
+
+    % D2-D0 side
+    \draw[line width=1.25pt] (D0) -- (P8);
+    \draw[-{Stealth[scale=1.2]}, shorten >= 3pt, line width=1.25pt] (P8) -- (D2);
+
+    % D3-D0 side
+    \draw[line width=1.25pt] (D0) -- (P9);
+    \draw[-{Stealth[scale=1.2]}, shorten >= 3pt, line width=1.25pt] (P9) -- (D3);
+
+    % mark blue points in each apex
+    \foreach \point in {A,B,C,D0,D1,D2,D3}{
+        \fill[blue] (\point) circle [radius=3pt];
+    }
+\end{tikzpicture}

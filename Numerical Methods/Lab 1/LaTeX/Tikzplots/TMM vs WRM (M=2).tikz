@@ -14,6 +14,10 @@
         %     fixed,
         %     precision=3
         % }, % set fixed precision of 2 decimal places
+        yticklabel style={
+            /pgf/number format/.cd,
+            1000 sep={},
+        },
         grid=both,
         grid style={draw=gray!30},
         minor grid style={draw=gray!10},

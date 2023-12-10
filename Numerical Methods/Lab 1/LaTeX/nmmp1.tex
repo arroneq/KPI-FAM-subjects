@@ -348,10 +348,10 @@
 \end{equation}
 де набір з $M=2$ базових функцій обрано з експоненціальної сім'ї:
 \begin{align}
-    & \phi_1(s) = e^{-\frac{4s}{2L}} + A_{11}e^{-\frac{3s}{2L}} + A_{12}e^{-\frac{2s}{2L}} + A_{13}e^{-\frac{s}{2L}} + A_{14}, \label{eq: M=2 trial phi1(x)} \\
-    & \phi_2(s) = e^{-\frac{3s}{2L}} + A_{21}e^{-\frac{2s}{2L}} + A_{22}e^{-\frac{s}{2L}} + A_{23} + A_{24}e^{\frac{s}{2L}} \label{eq:  M=2 trial phi2(x)},
+    & \phi_1(s) = e^{-\frac{4s}{2L}} + C_{11}e^{-\frac{3s}{2L}} + C_{12}e^{-\frac{2s}{2L}} + C_{13}e^{-\frac{s}{2L}} + C_{14}, \label{eq: M=2 trial phi1(x)} \\
+    & \phi_2(s) = e^{-\frac{3s}{2L}} + C_{21}e^{-\frac{2s}{2L}} + C_{22}e^{-\frac{s}{2L}} + C_{23} + C_{24}e^{\frac{s}{2L}} \label{eq:  M=2 trial phi2(x)},
 \end{align}
-при цьому в силу нульових граничних умов~\eqref{eq: edge conditions} коефіцієнти $A_{ij}$ дорівнюють:
+при цьому в силу нульових граничних умов~\eqref{eq: edge conditions} коефіцієнти $C_{ij}$ дорівнюють:
 
 \vspace{0.4cm}
 \begin{table}[H]\centering
@@ -364,7 +364,7 @@
             row{1-2}={mode=math},
         }
         
-        A_{11}  & A_{12} & A_{13} & A_{14}  & A_{21}  & A_{22} & A_{23}  & A_{24} \\
+        C_{11}  & C_{12} & C_{13} & C_{14}  & C_{21}  & C_{22} & C_{23}  & C_{24} \\
         -2.2834 & 1.0149 & 0.4912 & -0.2227 & -2.9305 & 2.6637 & -0.7915 & 0.0583 \\
 
     \end{tblr}
@@ -435,9 +435,9 @@
 
 Використовуючи знайдені значення коефіцієнтів $a_1$ та $a_2$ з Табл.~\ref{table: W(s) coefficients values} й скориставшись формулою наближеного аналітичного розв'язку~\eqref{eq: W(s) M=2 approximation}, маємо змогу побудувати неперервні значення переміщення при деформації балки довжиною $2L=100$ під дією зосередженої сили в точці $L/2$ з урахуванням проміжної опори в точці $L$. 
 
-Порівняльний графік кривих за аналітичним методом МПП та наближеним аналітичним рішенням МЗЗ наведений на Рис~\ref{pic: TMM vs WRM (M=2)}. Міру несхожості отриманих кривих $W(x)_{\text{мпп}}$ та $W(x)_{\text{мзз}}$ визначатимемо так:
+Порівняльний графік кривих за аналітичним методом МПП та наближеним аналітичним рішенням МЗЗ наведений на Рис~\ref{pic: TMM vs WRM (M=2)}. Міру несхожості отриманих кривих $W(s)_{\text{мпп}}$ та $W(s)_{\text{мзз}}$ визначатимемо так:
 \begin{equation}\label{eq: measure of dissimilarity}
-    d\bigl( W(x)_{\text{мпп}},W(x)_{\text{мзз}} \bigr) = \frac{1}{|I|} \sum\limits_{i \in I} \left| \frac{ W(x_i)_{\text{мпп}} - W(x_i)_{\text{мзз}}}{W(x_i)_{\text{мпп}}} \right|,\ I=\{1,2,\ldots,2L\}
+    \Delta W(s) = \frac{1}{|I|} \sum\limits_{i \in I} \left| \frac{ W(s_i)_{\text{мпп}} - W(s_i)_{\text{мзз}}}{W(s_i)_{\text{мпп}}} \right|,\ I=\{1,2,\ldots,2L\}
 \end{equation}
 
 \begin{figure}[H]\centering
@@ -449,7 +449,7 @@
 
 Згідно з~\eqref{eq: measure of dissimilarity}, міра несхожості між кривими на Рис.~\ref{pic: TMM vs WRM (M=2)} складатиме:
 \begin{equation}\label{eq: measure of dissimilarity (M=2) value}
-    d\bigl( W(x)_{\text{мпп}},W(x)_{\text{мзз}} \bigr) = 15.86\%
+    \Delta W(s) = 15.86\%
 \end{equation}
 
 \subsection*{Коригування набору базових функцій}
@@ -457,21 +457,21 @@
 
 Розглянемо почергово дещо доповнені переліки базових функцій з експоненціальної сім'ї. А саме, почнемо з набору $M=3$ базових функцій виду:
 \begin{align}
-    & \phi_1(s) = e^{-\frac{4s}{2L}} + A_{11}e^{-\frac{3s}{2L}} + A_{12}e^{-\frac{2s}{2L}} + A_{13}e^{-\frac{s}{2L}} + A_{14}, \label{eq: M=3 trial phi1(x)} \\
-    & \phi_2(s) = e^{-\frac{3s}{2L}} + A_{21}e^{-\frac{2s}{2L}} + A_{22}e^{-\frac{s}{2L}} + A_{23} + A_{24}e^{\frac{s}{2L}}, \label{eq: M=3 trial phi2(x)} \\
-    & \phi_3(s) = e^{-\frac{2s}{2L}} + A_{31}e^{-\frac{s}{2L}} + A_{32} + A_{33}e^{\frac{s}{2L}} + A_{34}e^{\frac{2s}{2L}}, \label{eq: M=3 trial phi3(x)}
+    & \phi_1(s) = e^{-\frac{4s}{2L}} + C_{11}e^{-\frac{3s}{2L}} + C_{12}e^{-\frac{2s}{2L}} + C_{13}e^{-\frac{s}{2L}} + C_{14}, \label{eq: M=3 trial phi1(x)} \\
+    & \phi_2(s) = e^{-\frac{3s}{2L}} + C_{21}e^{-\frac{2s}{2L}} + C_{22}e^{-\frac{s}{2L}} + C_{23} + C_{24}e^{\frac{s}{2L}}, \label{eq: M=3 trial phi2(x)} \\
+    & \phi_3(s) = e^{-\frac{2s}{2L}} + C_{31}e^{-\frac{s}{2L}} + C_{32} + C_{33}e^{\frac{s}{2L}} + C_{34}e^{\frac{2s}{2L}}, \label{eq: M=3 trial phi3(x)}
 \end{align}
-які в силу задовольнення нульових граничних умов~\eqref{eq: edge conditions} матимуть визначені коефіцієнти $A_{ij}$. Аналогічним чином провівши процедуру <<зваження>> за МЗЗ, отримаємо шукані коефіцієнти $a_1,a_2,a_3$ для представлення функції переміщення у вигляді: 
+які в силу задовольнення нульових граничних умов~\eqref{eq: edge conditions} матимуть визначені коефіцієнти $C_{ij}$. Аналогічним чином провівши процедуру <<зваження>> за МЗЗ, отримаємо шукані коефіцієнти $a_1,a_2,a_3$ для представлення функції переміщення у вигляді: 
 \begin{equation}\label{eq: W(s) M=3 approximation}
     W(s) = a_1\phi_1(s) + a_2\phi_2(s) + a_3\phi_3(s)
 \end{equation}
 
 Отримана крива проілюстрована на Рис.~\ref{pic: TMM vs WRM}, значення міри несхожості з результатами МПП зображені у Табл.~\ref{table: measure of dissimilarity}. Наступний набір $M=4$ базових функцій покладемо як 
 \begin{align}
-    & \phi_1(s) = e^{-\frac{4s}{2L}} + A_{11}e^{-\frac{3s}{2L}} + A_{12}e^{-\frac{2s}{2L}} + A_{13}e^{-\frac{s}{2L}} + A_{14}, \label{eq: M=4 trial phi1(x)} \\
-    & \phi_2(s) = e^{-\frac{3s}{2L}} + A_{21}e^{-\frac{2s}{2L}} + A_{22}e^{-\frac{s}{2L}} + A_{23} + A_{24}e^{\frac{s}{2L}}, \label{eq: M=4 trial phi2(x)} \\
-    & \phi_3(s) = e^{-\frac{2s}{2L}} + A_{31}e^{-\frac{s}{2L}} + A_{32} + A_{33}e^{\frac{s}{2L}} + A_{34}e^{\frac{2s}{2L}}, \label{eq: M=4 trial phi3(x)} \\
-    & \phi_4(s) = e^{-\frac{s}{2L}} + A_{41} + A_{42}e^{\frac{s}{2L}} + A_{43}e^{\frac{2s}{2L}} + A_{44}e^{\frac{3s}{2L}}, \label{eq: M=4 trial phi4(x)}
+    & \phi_1(s) = e^{-\frac{4s}{2L}} + C_{11}e^{-\frac{3s}{2L}} + C_{12}e^{-\frac{2s}{2L}} + C_{13}e^{-\frac{s}{2L}} + C_{14}, \label{eq: M=4 trial phi1(x)} \\
+    & \phi_2(s) = e^{-\frac{3s}{2L}} + C_{21}e^{-\frac{2s}{2L}} + C_{22}e^{-\frac{s}{2L}} + C_{23} + C_{24}e^{\frac{s}{2L}}, \label{eq: M=4 trial phi2(x)} \\
+    & \phi_3(s) = e^{-\frac{2s}{2L}} + C_{31}e^{-\frac{s}{2L}} + C_{32} + C_{33}e^{\frac{s}{2L}} + C_{34}e^{\frac{2s}{2L}}, \label{eq: M=4 trial phi3(x)} \\
+    & \phi_4(s) = e^{-\frac{s}{2L}} + C_{41} + C_{42}e^{\frac{s}{2L}} + C_{43}e^{\frac{2s}{2L}} + C_{44}e^{\frac{3s}{2L}}, \label{eq: M=4 trial phi4(x)}
 \end{align}
 які, своєю чергою, задовольняють нульовим граничним умовам~\eqref{eq: edge conditions} та формують функцію переміщення відповідно до~\eqref{eq: y(x) approximation}:
 \begin{equation}\label{eq: W(s) M=4 approximation}
@@ -480,11 +480,11 @@
 
 Усі порівняльні характеристики кривої продемонстровані на Рис.~\ref{pic: TMM vs WRM} та у Табл.~\ref{table: measure of dissimilarity}. Зауважуємо, що наближений аналітичний розв'язок при $M=4$ вже значно точніше апроксимує криву за методом МПП. Наостанок, розглянемо набір таких $M=5$ базових функцій, які задовольняють усім умовам МЗЗ:
 \begin{align}
-    & \phi_1(s) = e^{-\frac{4s}{2L}} + A_{11}e^{-\frac{3s}{2L}} + A_{12}e^{-\frac{2s}{2L}} + A_{13}e^{-\frac{s}{2L}} + A_{14} \label{eq: M=5 trial phi1(x)} \\
-    & \phi_2(s) = e^{-\frac{3s}{2L}} + A_{21}e^{-\frac{2s}{2L}} + A_{22}e^{-\frac{s}{2L}} + A_{23} + A_{24}e^{\frac{s}{2L}} \label{eq: M=5 trial phi2(x)} \\
-    & \phi_3(s) = e^{-\frac{2s}{2L}} + A_{31}e^{-\frac{s}{2L}} + A_{32} + A_{33}e^{\frac{s}{2L}} + A_{34}e^{\frac{2s}{2L}} \label{eq: M=5 trial phi3(x)} \\
-    & \phi_4(s) = e^{-\frac{s}{2L}} + A_{41} + A_{42}e^{\frac{s}{2L}} + A_{33}e^{\frac{2s}{2L}} + A_{44}e^{\frac{3s}{2L}} \label{eq: M=5 trial phi4(x)} \\
-    & \phi_5(s) = 1 + A_{51}e^{\frac{s}{2L}} + A_{52}e^{\frac{2s}{2L}} + A_{53}e^{\frac{3s}{2L}} + A_{54}e^{\frac{4s}{2L}} \label{eq: M=5 trial phi5(x)}
+    & \phi_1(s) = e^{-\frac{4s}{2L}} + C_{11}e^{-\frac{3s}{2L}} + C_{12}e^{-\frac{2s}{2L}} + C_{13}e^{-\frac{s}{2L}} + C_{14} \label{eq: M=5 trial phi1(x)} \\
+    & \phi_2(s) = e^{-\frac{3s}{2L}} + C_{21}e^{-\frac{2s}{2L}} + C_{22}e^{-\frac{s}{2L}} + C_{23} + C_{24}e^{\frac{s}{2L}} \label{eq: M=5 trial phi2(x)} \\
+    & \phi_3(s) = e^{-\frac{2s}{2L}} + C_{31}e^{-\frac{s}{2L}} + C_{32} + C_{33}e^{\frac{s}{2L}} + C_{34}e^{\frac{2s}{2L}} \label{eq: M=5 trial phi3(x)} \\
+    & \phi_4(s) = e^{-\frac{s}{2L}} + C_{41} + C_{42}e^{\frac{s}{2L}} + C_{33}e^{\frac{2s}{2L}} + C_{44}e^{\frac{3s}{2L}} \label{eq: M=5 trial phi4(x)} \\
+    & \phi_5(s) = 1 + C_{51}e^{\frac{s}{2L}} + C_{52}e^{\frac{2s}{2L}} + C_{53}e^{\frac{3s}{2L}} + C_{54}e^{\frac{4s}{2L}} \label{eq: M=5 trial phi5(x)}
 \end{align}
 
 \begin{figure}[H]\centering
@@ -501,15 +501,12 @@
     \begin{tblr}{
             hlines={1pt,solid},
             vlines={1pt,solid},
-            colspec={cc},
-            row{1-5}={mode=math},
+            colspec={cQ[2cm,c]Q[2cm,c]Q[2cm,c]Q[2cm,c]},
+            rows={mode=math},
         }
         
-            & d\bigl( W(x)_{\text{мпп}},W(x)_{\text{мзз}} \bigr) \\
-        M=2 & 15.86\%                                            \\
-        M=3 & 19.26\%                                            \\
-        M=4 & 10.22\%                                            \\
-        M=5 & 3.12 \%                                            \\
+                    & M=2     & M=3     & M=4     & M=5    \\ 
+        \Delta W(s) & 15.86\% & 19.26\% & 10.22\% & 3.12\% \\
 
     \end{tblr}
     \caption{Значення міри несхожості між кривими за МПП та МЗЗ при виборі різної кількості $M$ базових функцій експоненціальної сім'ї}

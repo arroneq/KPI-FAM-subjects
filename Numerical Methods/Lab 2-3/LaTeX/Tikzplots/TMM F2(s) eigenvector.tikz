@@ -1,0 +1,37 @@
+\begin{tikzpicture}
+    \begin{axis}[
+        height = 0.5\linewidth,
+        width = 0.85\linewidth,
+        xlabel={Координата балки $s$},
+        ylabel={Значення переміщення $W(s)$},
+        scale only axis,
+        scaled y ticks=false,
+        xmin=-1, xmax=21,
+        % scaled y ticks=base 10:-11, 
+        ymin=-0.25, ymax=2.875, 
+        % ytick distance=0.001,
+        yticklabel style={
+            /pgf/number format/.cd,
+            fixed,
+            fixed zerofill,
+            precision=1,
+            /tikz/.cd
+        }, 
+        grid=both,
+        grid style={draw=gray!30},
+        minor grid style={draw=gray!10},
+        minor x tick num=3,
+        minor y tick num=3,
+    ]
+        \addplot[gray!50, dash pattern={on 7pt off 4pt}, line width=1pt] table {
+            -10 0
+            30 0
+        };
+        \addplot[blue!80, line width=2pt] table[x=s, y=W(s)] {Data/TMM F2(s) eigenvector.txt};
+        \addplot[blue!80, only marks, mark=*, mark size=3pt] table {
+            0 0
+            10 0
+            20 0
+        };
+    \end{axis}
+\end{tikzpicture}

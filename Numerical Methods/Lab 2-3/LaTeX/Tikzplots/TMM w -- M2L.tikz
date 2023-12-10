@@ -1,0 +1,31 @@
+\begin{tikzpicture}
+    \begin{axis}[
+        height=0.4\linewidth,
+        width=0.85\linewidth,
+        xlabel={Значення власної частоти $\omega$},
+        ylabel={Значення $x_{15}$},
+        scale only axis,
+        xmin=-0.05, xmax=1.05, 
+        ymin=-1.25, ymax=4.25,
+        % scaled y ticks=base 10:-32,
+        grid=both,
+        grid style={draw=gray!30},
+        minor grid style={draw=gray!10},
+        minor x tick num=3,
+        minor y tick num=3,
+        yticklabel style={
+            /pgf/number format/.cd,
+            fixed,
+            fixed zerofill,
+            precision=1,
+            /tikz/.cd
+        }, 
+    ]
+        \addplot[gray!50, dash pattern={on 7pt off 4pt}, line width=1pt] table {
+            -1 0
+            2 0
+        };
+        % \addplot[line width=2pt] table[x=w, y=M2L] {Data/TMM w -- M2L.txt};
+        \addplot[mark=*, mark size=2pt, only marks] table[x=w, y=M2L] {Data/TMM w -- M2L.txt};
+    \end{axis}
+\end{tikzpicture}

@@ -1,0 +1,271 @@
+% !TeX program = lualatex
+% !TeX encoding = utf8
+% !BIB program = biber
+% !TeX spellcheck = uk_UA
+
+\documentclass{mathreport}
+\input{packages}
+
+\begin{document}
+
+\ReportPreamble{Лабораторна робота №4}
+\ReportName{Моделювання еволюції капіталу страхової компанії за допомогою ланцюгів Маркова}
+\ReportSubject{Методи теорії надійності та ризику}
+
+\AuthorInfo{Студент 5 курсу, групи КМ-31мн,}
+\AuthorName{Цибульник Антон Владиславович}
+
+\SupervisorInfo{Професор кафедри ПМА,}
+\SupervisorName{Норкін Володимир Іванович}
+
+% warning: in order to fit the text in the very right side of a page, set the longest label
+\TheLongestLabel{Цибульник Антон Владиславович}
+
+\import{Title/}{title}
+
+\tableofcontents
+
+\newpage
+
+\section*{Теоретичні відомості про марковські моделі}
+\addcontentsline{toc}{section}{Теоретичні відомості про марковські моделі}
+
+Нехай $\left\{ U_t \right\}_{t=\overline{1,T}}$~--- послідовність випадкових величин зі значеннями в множині $E=\{ 0,1,2,\ldots,M \}$. Послідовність $\left\{ U_t \right\}_{t=\overline{1,T}}$ утворює ланцюг Маркова, якщо $\forall t\geqslant 2 \quad \forall u_1,u_2,\ldots,u_{t+1} \in E$ виконується так звана марковська властивість:
+\begin{equation}\label{eq: Markov chain definition}
+    P\left( U_{t+1}=u_{t+1} \,|\, U_t=u_t,\ldots,U_1=u_1 \right) = P\left( U_{t+1}=u_{t+1} \,|\, U_t=u_t \right)
+\end{equation}
+
+Множину $E$ називають множиною станів ланцюга, а випадкова величина $U_t$ трактується як стан системи в момент часу $t$. Надалі у ході дослідження по замовчуванню розглядатиметься так званий однорідний ланцюг Маркова, для якого ймовірності переходу $P\left( U_{t+1}=j \,|\, U_{t}=i \right)$ з одного стану $i \in E$ в інший стан $j \in E$ не залежать від $t$. Матриця $P$, складена із імовірностей перехіду $p_{ij} = P\left( U_{t+1}=j \,|\, U_{t}=i \right)$, називається матрицею перехідних імовірностей:
+\begin{equation}\label{eq: transition matrix}
+    P = \Bigl( p_{ij} \Bigr)_{i,j \in E} = \Bigl( P\left( U_{t+1}=j \,|\, U_{t}=i \right) \Bigr)_{i,j \in E}
+\end{equation} 
+
+Ця матриця є стохастичною, тобто
+\begin{equation}\label{eq: stohastic conditions}
+    \forall i,j \in E: p_{ij} \geqslant 0\ \text{ та }\ \forall i \in E: \sum\limits_{j \in E} p_{ij} = 1
+\end{equation}
+
+Окрім матриці $P$, ланцюг Маркова визначається вектором початкового розподілу ймовірностей:
+\begin{equation}\label{eq: initial distribution}
+    \lambda = \Bigl( \lambda_i \Bigr)_{i \in E} = \Bigl( P\left( U_{1} = i \right) \Bigr)_{i \in E}
+\end{equation}
+
+Скінченновимірні розподіли ланцюга Маркова повністю визначаються матрицею перехідних імовірностей $P$ та вектором початкового розподілу ймовірностей~$\lambda$, тобто $\forall t\geqslant 2 \quad \forall u_1,u_2,\ldots,u_{t} \in E:$
+\begin{equation}\label{eq: finite-dimensional distributions}
+    P\left( U_{1}=u_{1},U_{2}=u_{2},\ldots,U_{t-1}=u_{t-1},U_{t}=u_{t} \right) = \lambda_{u_1} \cdot p_{u_1 u_2} \cdot \ldots \cdot p_{u_{t-1}u_{t}} 
+\end{equation}
+
+Відтак, імовірність переходу зі стану $i \in E$ в момент часу $1$ до стану $j \in E$ в моменту часу $T$ виражатиметься через відповідний компонент матриці $P$, піднесеної до степені $T:$
+\begin{equation}\label{eq: from t=1 to t=T}
+    P\left( U_{T}=j \,|\,U_{1}=i \right) = \left( P^{T} \right)_{ij}
+\end{equation}
+
+Як наслідок, за формулою повної ймовірності безумовна імовірність перебування стану ланцюга в момент часу~$T$ матиме вигляд:
+\begin{equation}\label{eq: point state probability}
+    P\left( U_{T}=j \right) = \sum\limits_{i \in E} P\left( U_1=i \right) P\left( U_T=j \,|\, U_1=i \right) = \sum\limits_{i \in E} \lambda_i \left( P^{T} \right)_{ij}
+\end{equation}
+
+\section*{Постановка задачі}
+\addcontentsline{toc}{section}{Постановка задачі}
+
+Лабораторна робота стосується моделювання еволюції капіталу страхової компанії <<Арсенал страхування>> за допомогою ланцюгів Маркова. Мета роботи полягає у побудові ланцюга Маркова, стани якого відображають капітал компанії (у тисячах гривень). 
+
+Відтак, динаміка такого ланцюга ототожнюватиме еволюцію капіталу страхової компанії. Як підсумок дослідження слід обчислити імовірність банкрутства компанії за певний відрізок часу $T$, або, іншими словами, імовірність ланцюга Маркова потрапити у стан <<0>> за вказану кількість кроків. 
+
+\section*{Хід дослідження}
+\addcontentsline{toc}{section}{Хід дослідження}
+
+\subsection{Побудова ланцюга Маркова}
+
+Нехай $\left\{ U_t \right\}_{t=\overline{1,T}}$~--- ланцюг Маркова, заданий рівнянням еволюції капіталу страхової компанії:
+\begin{equation}\label{eq: capital evolution}
+    U_{t+1} = U_{t} + (1-a) \cdot b - \xi \cdot b,
+\end{equation}
+де $a$~--- задана частка премій, витрачених на обслуговування договорів страхування, валове значення премії $b$ страхової компанії <<Арсенал страхування>>
+\begin{equation}\label{eq: insurance premium value}
+    b = 1\;667\ \text{тис. грн.},
+\end{equation} 
+значення капіталу $U_t$ в початковий момент часу складає
+\begin{equation}\label{eq: initial (2022) capital}
+    U_1 = 576\ \text{тис. грн.},
+\end{equation}
+а значення випадкової величини $\xi \in \Omega$ обирається щоразу навмання серед наявної історії рівнів виплат (Рис.~\ref{pic: annual payout levels}):
+\begin{equation}\label{eq: annual payout levels}
+    \Omega = \{ 0.20,\, 0.29,\, 0.20,\, 0.21,\, 0.26,\, 0.31,\, 0.36,\, 0.42,\, 0.43 \}
+\end{equation}
+
+Множина станів $E=\{ 0,1,2,\ldots,M \}$ ланцюга $\left\{ U_t \right\}_{t=\overline{1,T}}$ відповідатиме значенням капіталу компанії у тисячах гривень, де згідно умов варіанту при $N=13:$
+\begin{equation}\label{eq: limit value of capital}
+    M = 2U_1 + 100N = 2\;452\ \text{тис. грн.}
+\end{equation}
+
+Варто зауважити, що при використанні формули еволюції капіталу~\eqref{eq: capital evolution} слід зважати на такі обмеження~--- капітал компанії не може опускатися нижче нуля (стан <<0>> вважається дефолтом) чи перебувати вище значення~$M$ (надлишок вилучається з резервів, тобто, наприклад, виплачується у вигляді дивідендів). Крім того, капітал має бути виключно цілим числом.
+
+\begin{figure}[H]\centering
+    \input{Tikzplots/annual payout levels.tikz}
+    \caption{Рівні виплат страхової компанії <<Арсенал страхування>>}
+    \label{pic: annual payout levels}
+\end{figure}
+
+Іншими словами, із використанням нотації округлення $[\ \cdot\ ]$ до найближчого цілого числа, формалізація умов та обмежень стосовно еволюції капіталу компанії виражатиметься таким чином:
+\begin{equation}\label{eq: edited capital evolution}
+    U_{t+1} = U_{t} + [(1-a) \cdot b] - [\xi \cdot b]
+\end{equation}
+
+Отже, згідно викладок у теоретичному розділі лабораторної роботи, ланцюг Маркова $\left\{ U_t \right\}_{t=\overline{1,T}}$ визначатиметься матрицею перехідних імовірностей $P$ та вектором початкового розподілу $\lambda$. 
+
+Оскільки ланцюг стартуватиме із визначеного стану $U_1$~\eqref{eq: initial (2022) capital}, компоненти вектора $\lambda = \bigl( \lambda_i \bigr)_{i \in E}$ матимуть вигляд:
+\begin{equation}\label{eq: set initial distribution}
+    \lambda_i = 
+    \begin{cases}
+        1, & i = U_1 \\
+        0, & i\neq U_1 \\
+    \end{cases}
+\end{equation}
+
+Матриця перехідних імовірностей $P = \bigl( p_{ij} \bigr)_{i,j \in E}$ також будуватиметься згідно з певними логічними міркуваннями щодо динаміки капіталу компанії. Перш за все, імовірність виходу із дефолтного стану дорівнює нулю:  
+\begin{equation}\label{eq: i=0 transition matrix}
+    p_{ij} = P\left( U_{t+1}=j \,|\, U_{t}=i \right) = 
+    \begin{cases}
+        0, & i=0,\, j=\overline{1,M} \\
+        1, & i=0,\, j=0 \\
+    \end{cases}
+\end{equation} 
+
+Використовуючи нотацію індикаторної функції $\mathbbm{1}\{ \, \cdot \, \}$, яка довільній події ставить у відповідність число $0$ або $1$, розглянемо імовірності переходу зі стану, відмінного від дефолтного, у граничний стан, тобто $\forall i=\overline{1,M}$ та $j=M:$
+\begin{align}\label{eq: j=M transition matrix}
+    p_{ij} = P\left( U_{t+1}=j \,|\, U_{t}=i \right) & = P\left( U_{t} + [(1-a) \cdot b] - [\xi \cdot b] \geqslant M \,|\, U_{t}=i \right) = \notag \\
+    & = P\left( i + [(1-a) \cdot b] - [\xi \cdot b] \geqslant M \right) = \notag \\
+    & = \frac{1}{|\Omega|}\sum\limits_{k=1}^{|\Omega|}\mathbbm{1}\left\{ i + [(1-a) \cdot b] - [\xi_k \cdot b] \geqslant M \right\}
+\end{align} 
+
+Іншими словами, імовірність переходу в стан $j=M$ тим вища, чим ближче поточний стан до гарничного стану. Аналогічні міркування стосуються імовірності переходу зі стану, відмінного від дефолтного, у дефолтний стан, тобто при $\forall i=\overline{1,M}$ та $j=0:$ 
+\begin{align}\label{eq: j=0 transition matrix}
+    p_{ij} = P\left( U_{t+1}=j \,|\, U_{t}=i \right) & = P\left( U_{t} + [(1-a) \cdot b] - [\xi \cdot b] \leqslant 0 \,|\, U_{t}=i \right) = \notag \\
+    & = P\left( i + [(1-a) \cdot b] - [\xi \cdot b] \leqslant 0 \right) = \notag \\
+    & = \frac{1}{|\Omega|}\sum\limits_{k=1}^{|\Omega|}\mathbbm{1}\left\{ i + [(1-a) \cdot b] - [\xi_k \cdot b] \leqslant 0 \right\}
+\end{align} 
+
+Наостанок, для усіх інших станів $\forall i=\overline{1,M}$ та $j\neq 0,M$ імовірності переходу  обчислюватимуться таким чином:
+\begin{align}\label{eq: j transition matrix}
+    p_{ij} = P\left( U_{t+1}=j \,|\, U_{t}=i \right) & = P\left( U_{t} + [(1-a) \cdot b] - [\xi \cdot b] = j \,|\, U_{t}=i \right) = \notag \\
+    & = P\left( i + [(1-a) \cdot b] - [\xi \cdot b] = j \right) = \notag \\
+    & = \frac{1}{|\Omega|}\sum\limits_{k=1}^{|\Omega|}\mathbbm{1}\left\{ i + [(1-a) \cdot b] - [\xi_k \cdot b] = j \right\}
+\end{align} 
+
+\subsection{Модельний приклад побудови ланцюга Маркова}
+
+Наведемо невеликий модельний приклад (поза контексту страхової компанії <<Арсенал страхування>>) для демонстрації структури утвореної матриці перехідних імовірнотстей~$P$ та вектора початкового розподілу $\lambda$. 
+
+Припустимо, закон еволюції ланцюга Маркова задається у грошовому еквіваленті до тисяч гривень при $a = 0.1$, $b = 6$, $U_1 = 2$ та $M = 8$. Тоді множиною станів ланцюга буде $E=\{ 0,1,2,3,4,5,6,7,8 \}$, а закон еволюції матиме вид:
+\begin{equation}\label{eq: test capital evolution}
+    U_{t+1} = U_{t} + 5 - [6\xi]
+\end{equation}
+
+Відтак, вектор початкового розподілу дорівнюватиме
+\begin{equation}\label{eq: test initial distribution}
+    \lambda = (0,\, 0,\, 1,\, 0,\, 0,\, 0,\, 0,\, 0,\, 0)
+\end{equation}
+
+В свою чергу, матриця перехідних імовірностей $P$ для вказаного модельного прикладу~\eqref{eq: test capital evolution} при історії рівнів капіталу з множини~$\Omega$~\eqref{eq: annual payout levels} отримає форму:
+
+\begin{table}[H]\centering
+    \begin{tblr}{
+            hlines,vlines,
+            hline{1,2,11}={1pt,solid},
+            vline{1,2,11}={1pt,solid},
+            colspec={cccccccccc},
+            rows={mode=math},
+        }
+
+            & j=0 & j=1 & j=2 & j=3  & j=4  & j=5  & j=6  & j=7  & j=8  \\
+        i=0 & 1   & 0   & 0   & 0    & 0    & 0    & 0    & 0    & 0    \\
+        i=1 & 0   & 0   & 0   & 0.2  & 0.45 & 0.35 & 0    & 0    & 0    \\
+        i=2 & 0   & 0   & 0   & 0    & 0.2  & 0.45 & 0.35 & 0    & 0    \\
+        i=3 & 0   & 0   & 0   & 0    & 0    & 0.2  & 0.45 & 0.35 & 0    \\
+        i=4 & 0   & 0   & 0   & 0    & 0    & 0    & 0.2  & 0.45 & 0.35 \\
+        i=5 & 0   & 0   & 0   & 0    & 0    & 0    & 0    & 0.2  & 0.75 \\
+        i=6 & 0   & 0   & 0   & 0    & 0    & 0    & 0    & 0    & 1    \\
+        i=7 & 0   & 0   & 0   & 0    & 0    & 0    & 0    & 0    & 1    \\
+        i=8 & 0   & 0   & 0   & 0    & 0    & 0    & 0    & 0    & 1    \\
+
+    \end{tblr}
+    \label{table: transition matrix}
+    \caption{Матриця перехідних імовірностей $P$ модельного прикладу~\eqref{eq: test capital evolution}}
+\end{table}
+
+\subsection{Обчислення ймовірності розорення компанії}
+
+Повертаючись до даних по страховій компанії <<Арсенал страхування>>, то, враховуючи валове значення премії $b$~\eqref{eq: insurance premium value}, задану частку премій $a=0.1$, витрачених на обслуговування договорів страхування, значення капіталу в початковий момент часу $U_1$~\eqref{eq: initial (2022) capital}, історію рівнів виплат $\xi$ з множини $\Omega$~\eqref{eq: annual payout levels} та граничне значення капіталу $M$~\eqref{eq: limit value of capital}, отримуємо закон еволюції ланцюга Маркова
+\begin{equation}\label{eq: real capital evolution}
+    U_{t+1} = U_{t} + 1500 - [1667 \cdot \xi]
+\end{equation}
+на множині станів $E=\{ 0,1,2,\ldots,2452 \}$. При цьому, згідно із формулою~\eqref{eq: point state probability}, імовірність банкрутства компанії за, наприклад, $T=10$ років буде обчислюватися як імовірність потрапляння ланцюга Маркова в стан <<0>> за відповідну кількість кроків. Відтак, зважаючи на вигляд вектора початкового розподілу $\lambda$~\eqref{eq: set initial distribution}, шукана імовірність обчислюватиметься через побудовану матрицю перехідних імовірностей~$P:$
+\begin{equation}\label{eq: real point state probability}
+    P\left( U_{10}=0 \right) = \sum\limits_{i \in E} P\left( U_1=i \right) P\left( U_{10}=0 \,|\, U_1=i \right) = \left( P^{10} \right)_{U_10}
+\end{equation}
+
+У Табл.~\ref{table: bankruptcy risks} продемонстровані обчислення імовірності банкрутства при різних значеннях частки премії $a$.
+
+\begin{table}[H]\centering
+    \begin{tblr}{
+            hlines,vlines,
+            hline{1,2,5,8,11,14,17}={1pt,solid},
+            vline{1-4}={1pt,solid},
+            colspec={Q[c,4cm]Q[c,4cm]Q[c,4cm]},
+            row{1}={m},
+            row{2-Z}={mode=math},
+            cell{2}{1}={r=3,c=1}{c},
+            cell{5}{1}={r=3,c=1}{c},
+            cell{8}{1}={r=3,c=1}{c},
+            cell{11}{1}={r=3,c=1}{c},
+            cell{14}{1}={r=3,c=1}{c},
+            cell{2}{3}={r=3,c=1}{c},
+            cell{5}{3}={r=3,c=1}{c},
+            cell{8}{3}={r=3,c=1}{c},
+            cell{14}{3}={r=3,c=1}{c},
+        }
+
+        Частка премій & Роки $T$ роботи компанії & Імовірність банкрутства \\
+        a=0.1         & 10                       & 0.0                     \\
+                      & 50                       &                         \\
+                      & 100                      &                         \\
+        a=0.3         & 10                       & 0.0                     \\
+                      & 50                       &                         \\
+                      & 100                      &                         \\
+        a=0.5         & 10                       & 0.0                     \\
+                      & 50                       &                         \\
+                      & 100                      &                         \\
+        a=0.7         & 10                       & 0.14                    \\
+                      & 50                       & 0.45                    \\
+                      & 100                      & 0.56                    \\
+        a=0.9         & 10                       & 1.0                     \\
+                      & 50                       &                         \\
+                      & 100                      &                         \\
+
+    \end{tblr}
+    \label{table: bankruptcy risks}
+    \caption{Імовірності банкрутства для компанії <<Арсенал страхування>>}
+\end{table}
+
+% \newpage
+% \printbibliography[title={Перелік посилань}] % \nocite{*}
+% \addcontentsline{toc}{section}{Перелік посилань}
+
+\newpage
+\section*{Програмна реалізація}
+\addcontentsline{toc}{section}{Програмна реалізація}
+
+В ході дослідження було використано засоби мови програмування \texttt{Python} версії \texttt{3.8.10} в інтегрованому середовищі розробки \texttt{Visual Studio Code} версії \texttt{1.78.2}. Нижче наведені тексти ключових інструментальних програм.
+
+\lstinputlisting[linerange={1-2}, caption={Підключення бібліотек}]{Code/code.py}
+
+\lstinputlisting[linerange={4-16}, caption={Ініціалізація та візуалізація параметрів}]{Code/code.py}
+
+\lstinputlisting[linerange={18-37}, caption={Імплементація побудови матриці перехідних імовірнсотей $P$}]{Code/code.py}
+
+\lstinputlisting[linerange={39-40}, caption={Зведення матриці до степеня $T$}]{Code/code.py}
+
+\lstinputlisting[linerange={42-49}, caption={Обчислення імовірностей банкрутства}]{Code/code.py}
+
+\end{document}

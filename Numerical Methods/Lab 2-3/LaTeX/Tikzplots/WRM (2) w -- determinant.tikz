@@ -1,0 +1,30 @@
+\begin{tikzpicture}
+    \begin{axis}[
+        height=0.4\linewidth,
+        width=0.85\linewidth,
+        xlabel={Значення власної частоти $\omega$},
+        ylabel={Значення $\det{A^{\text{\scriptsize МЗЗ}}_{\scalebox{0.6}{3\times3}}}$},
+        scale only axis,
+        xmin=-0.05, xmax=1.05, 
+        ymin=-6.5*1e-7, ymax=0.5*1e-7,
+        % scaled x ticks=base 10:-6,
+        grid=both,
+        grid style={draw=gray!30},
+        minor grid style={draw=gray!10},
+        minor x tick num=3,
+        minor y tick num=3,
+        yticklabel style={
+            /pgf/number format/.cd,
+            fixed,
+            fixed zerofill,
+            precision=1,
+            /tikz/.cd
+        },  
+    ]
+        \addplot[gray!50, dash pattern={on 7pt off 4pt}, line width=1pt] table {
+            -1 0
+            2 0
+        };
+        \addplot[mark=*, mark size=2pt, only marks] table[x=w, y=det] {Data/WRM (2) w -- determinant.txt};
+    \end{axis}
+\end{tikzpicture}

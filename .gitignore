@@ -15,6 +15,9 @@
 /Risk Theory/*/*/*
 !/Risk Theory/*/*/*/
 
+/English/*
+!/English/*/
+
 !*.ipynb
 !*.py
 !*.txt

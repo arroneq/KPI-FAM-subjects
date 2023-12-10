@@ -1,0 +1,21 @@
+\begin{tikzpicture}
+    \pgfmathsetmacro{\L}{6}
+    \pgfmathsetmacro{\ticklen}{0.125}
+
+    % element labels
+    \node[draw,rectangle] (P1) at (-\L/2,0) {1};
+    \node[draw,rectangle] (P2) at (\L/2,0) {2};
+
+    % main line (beam)
+    \draw[line width=2pt] (-\L,0) -- (P1) -- (P2) -- (\L,0);
+
+    % ticks
+    \draw[line width=2pt] (-\L,\ticklen) -- (-\L,-\ticklen);
+    \draw[line width=2pt] (0,\ticklen) -- (0,-\ticklen);
+    \draw[line width=2pt] (\L,\ticklen) -- (\L,-\ticklen);
+
+    % labels
+    \coordinate[label=below:{$0$}] (E1) at (-\L,0);
+    \coordinate[label=below:{$L$}] (E2) at (0,0);
+    \coordinate[label=below:{$2L$}] (E3) at (\L,0);
+\end{tikzpicture}

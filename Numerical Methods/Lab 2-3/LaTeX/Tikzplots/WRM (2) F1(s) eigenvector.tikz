@@ -1,0 +1,50 @@
+\begin{tikzpicture}
+    \begin{axis}[
+        height = 0.5\linewidth,
+        width = 0.85\linewidth,
+        xlabel={Координата балки $s$},
+        ylabel={Значення переміщення $W(s)$},
+        scale only axis,
+        scaled y ticks=false,
+        xmin=-1, xmax=21,
+        % scaled y ticks=base 10:3, 
+        % ymin=-3.25*1e-3, ymax=5.25*1e-3, 
+        % ytick distance=0.001,
+        yticklabel style={
+            /pgf/number format/.cd,
+            fixed,
+            fixed zerofill,
+            precision=1,
+            /tikz/.cd
+        },  
+        grid=both,
+        grid style={draw=gray!30},
+        minor grid style={draw=gray!10},
+        minor x tick num=3,
+        minor y tick num=3,
+        reverse legend,
+        legend style={                       % customize the legend style
+            at={(0.975,0.95)},                % position the legend at the top right corner of the plot
+            font=\small,                     % set the font size of the legend
+            anchor=north east,               % anchor the legend to the north east corner
+            cells={anchor=west}              % align the legend text to the left
+        },
+    ]
+        \addplot[gray!50, dash pattern={on 7pt off 4pt}, line width=1pt, forget plot] table {
+            -10 0
+            30 0
+        };
+
+        \addplot[orange!80, line width=2pt] table[x=s, y=W(s)] {Data/WRM (2) F1(s) eigenvector.txt};
+        \addlegendentry{\ $F_1(s)$ за МЗЗ ($\omega_1=0.1093$, $a_1=10^3$)}
+
+        \addplot[blue!80, line width=2pt] table[x=s, y=W(s)] {Data/TMM F1(s) eigenvector.txt};
+        \addlegendentry{\ $F_1(s)$ за МПП ($\omega_1=0.0987$, $\theta_0=1$)}
+
+        \addplot[blue!80, only marks, mark=*, mark size=3pt, forget plot] table {
+            0 0
+            10 0
+            20 0
+        };
+    \end{axis}
+\end{tikzpicture}

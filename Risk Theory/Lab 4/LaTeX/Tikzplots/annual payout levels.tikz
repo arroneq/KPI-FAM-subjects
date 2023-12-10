@@ -1,0 +1,41 @@
+\begin{tikzpicture}
+    \begin{axis}[
+        height=0.5\linewidth,
+        width=0.875\linewidth,
+        xlabel={Позначка часового діапазону},         
+        ylabel={Рівень виплат, \%},
+        scale only axis,
+        ymin=0.0, ymax=50,                         % set 0.0 as a "floor" of the y-axis
+        xtick={                       
+            2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022
+        },
+        xticklabel style={
+            /pgf/number format/.cd,
+            1000 sep={},
+        },
+        grid=both,            
+        grid style={draw=gray!30},                 
+        minor grid style={draw=gray!10},           
+        xtick align=center,                        % align x-axis tick marks to the center of the bars
+        minor y tick num=3,
+        xmajorgrids=false,                         
+        xminorgrids=false,                         
+    ]
+        \addplot[              
+            ybar,                                  % set the plot as a bar plot
+            bar width=25pt,       
+            fill=blue,       
+            opacity=0.7,        
+        ] coordinates {      
+            (2014, 20.33)
+            (2015, 29.12)
+            (2016, 20.1)
+            (2017, 20.42)
+            (2018, 25.74)
+            (2019, 30.68)
+            (2020, 36.29)
+            (2021, 41.93)
+            (2022, 43.17)
+        };
+    \end{axis}
+\end{tikzpicture}

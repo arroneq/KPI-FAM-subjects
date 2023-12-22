@@ -1,133 +1,173 @@
 import matplotlib.pyplot as plt
 from scipy.integrate import quad
 import numpy as np
+import copy
 
-L = 50
+L = 10
 
-##############################################################################################################
+def Krylov(index,varphi,s):    
+    if index == 1:
+        return (1.0/2)*(np.cosh(varphi*s) + np.cos(varphi*s))
+    if index == 2:
+        return (1.0/(2*varphi))*(np.sinh(varphi*s) + np.sin(varphi*s))
+    if index == 3:
+        return (1.0/(2*np.power(varphi,2)))*(np.cosh(varphi*s) - np.cos(varphi*s))
+    if index == 4:
+        return (1.0/(2*np.power(varphi,3)))*(np.sinh(varphi*s) - np.sin(varphi*s))
 
-##############################################################################################################
+step = 1e-4
+w_candidates = np.arange(step, 1+step/2, step)
 
-A = np.zeros((16,16))
-B = np.zeros((16))
+M2L = np.zeros(len(w_candidates))
+theta0 = 1.0
 
-# field equations 1
-s = L
-A[0][4], A[0][0], A[0][1], A[0][2], A[0][3], B[0] = 1, -1, -s, -(s**2)/2, -(s**3)/6, ((s-L/2)**3)/6
-A[1][5], A[1][1], A[1][2], A[1][3], B[1] = 1, -1, -s, -(s**2)/2, ((s-L/2)**2)/2
-A[2][6], A[2][2], A[2][3], B[2] = 1, -1, -s, (s-L/2)
-A[3][7], A[3][3], B[3] = 1, -1, 1
+w_zero_M2L = []
+for i in range(len(w_candidates)):
+    varphi = np.sqrt(w_candidates[i])
+    X = homogeneous_equations(theta0,varphi)
+    M2L[i] = X[14]
 
-# edge equations left
-A[4][0] = 1
-A[5][2] = 1
+    if M2L[i] == 0:
+        w_zero_M2L.append(w_candidates[i])
 
-# transition equations 1-2
-A[6][8], A[6][4] = 1, -1
-A[7][9], A[7][5] = 1, -1
-A[8][10], A[8][6] = 1, -1
-A[9][4] = 1
+W_tmm = []
+for w_i in w_zero_M2L:
+    varphi = np.sqrt(w_i)
+    X = homogeneous_equations(theta0,varphi)
 
-# field equations 2
-s = 2*L
-A[10][12], A[10][8], A[10][9], A[10][10], A[10][11] = 1, -1, -(s-L), -((s-L)**2)/2, -((s-L)**3)/6
-A[11][13], A[11][9], A[11][10], A[11][11] = 1, -1, -(s-L), -((s-L)**2)/2
-A[12][14], A[12][10], A[12][11] = 1, -1, -(s-L)
-A[13][15], A[13][11] = 1, -1
+    step = 0.01
+    S = np.arange(0, 2*L+step/2, step)
+    W_i = []
 
-# edge equations right
-A[14][12] = 1
-A[15][14] = 1
+    for s in S:
+        if 0 <= s <= L:
+            W_i.append(X[1]*Krylov(2,varphi,s) + X[3]*Krylov(4,varphi,s))
+        if L < s <= 2*L:
+            W_i.append(X[9]*Krylov(2,varphi,s-L) + X[10]*Krylov(3,varphi,s-L) + X[11]*Krylov(4,varphi,s-L))
+    
+    W_tmm.append(copy.deepcopy(W_i))
 
+step = 1e-4
+w_candidates = np.arange(0, 1+step/2, step)
+determinant = np.zeros(len(w_candidates))
+
+w_zero_determinant = []
+for i in range(len(w_candidates)):
+    I = calculate_integrads_2(w_candidates[i])
+
+    U = np.array([
+        [I[1][1], I[2][1], -phi_1(L)], 
+        [I[1][2], I[2][2], -phi_2(L)],
+        [phi_1(L), phi_2(L), 0]
+    ])
+
+    determinant[i] = np.linalg.det(U)
+    if determinant[i] == 0:
+        w_zero_determinant.append(w_candidates[i])
+
+I = calculate_integrads_2(w_zero_determinant[0])
+alpha1 = 1000
+
+U = np.array([
+    [I[2][1], -phi_1(L)], 
+    # [I[2][2], -phi_2(L)],
+    [phi_2(L), 0]
+])
+
+V = np.array([-alpha1*I[1][1], -alpha1*phi_1(L)])
+
+U_inv = np.linalg.inv(U)
+alpha2, Z = np.dot(U_inv,V)
+
+eta = 0.8*0.0987
+w = 0.0987
+varphi = np.sqrt(w)
+
+A, B = define_inhomogeneous_matrices(varphi)
 A_inv = np.linalg.inv(A)
 X = np.dot(A_inv,B)
-S_tmm = np.arange(0,2*L+1,1)
-W_tmm = []
 
-for s in S_tmm:
-    if s <= L/2:
-        W_tmm.append(X[0] + X[1]*s + X[2]*(s**2)/2 + X[3]*(s**3)/6)
-    if L/2 < s <= L:
-        W_tmm.append(X[0] + X[1]*s + X[2]*(s**2)/2 + X[3]*(s**3)/6 + ((s-L/2)**3)/6)
-    if L < s:
-        W_tmm.append(X[8] + X[9]*(s-L) + X[10]*((s-L)**2)/2 + X[11]*((s-L)**3)/6)
+step = 0.2
+S = np.arange(0, 2*L+step/2, step)
 
-plt.plot(S_tmm, W_tmm, marker="o", color="orange")
+W_tmm_classic_t = []
+for t in [0]:
+    W_t = []
+    for s in S:
+        if s <= L/2:
+            W_t.append((X[1]*Krylov(2,varphi,s) + X[3]*Krylov(4,varphi,s)) * np.cos(eta*t))
+        if L/2 < s <= L:
+            W_t.append((X[1]*Krylov(2,varphi,s) + X[3]*Krylov(4,varphi,s) - Krylov(4,varphi,s-L/2)) * np.cos(eta*t))
+        if s > L:
+            W_t.append((X[9]*Krylov(2,varphi,s-L) + X[10]*Krylov(3,varphi,s-L) + X[11]*Krylov(4,varphi,s-L)) * np.cos(eta*t))
+    
+    plt.plot(S, W_t, marker="o", color="blue")
+    W_tmm_classic_t.append(copy.deepcopy(W_t))
+
 plt.grid()
 plt.show()
 
-##############################################################################################################
+eta = 0.8*0.0987
 
-##############################################################################################################
+scale = 1200
 
-A1 = np.array([
-    [1, 1, 1, 1], 
-    [np.exp(-3), np.exp(-2), np.exp(-1), 1],
-    [9, 4, 1, 0],
-    [9*np.exp(-3), 4*np.exp(-2), np.exp(-1), 0],
-])
+step = 0.2
+S = np.arange(0, 2*L+step/2, step)
 
-B1 = np.array([-1, -np.exp(-4), -16, -16*np.exp(-4)])
+W_tmm_eigenvectors_t = []
+for t in [40]:
+    W_t = np.zeros(len(S))
+    for i in range(len(S)):
+        if 0 <= s <= L:
+            for w_i in w_zero_M2L[0:5]:
+                varphi = np.sqrt(w_i)
+                W_t[i] += scale*F(S[i],1,varphi)*T(t,1,w_i,eta)
+        if L < s <= 2*L:
+            for w_i in w_zero_M2L[0:5]:
+                varphi = np.sqrt(w_i)
+                W_t[i] += scale*F(S[i]-L,1,varphi)*T(t,1,w_i,eta)
+        
+    plt.plot(S, W_t, marker="o", color="blue")
+    W_tmm_eigenvectors_t.append(copy.deepcopy(W_t))
 
-A1_inv = np.linalg.inv(A1)
-a1, b1, c1, d1 = np.dot(A1_inv,B1)
+plt.grid()
+plt.show()
 
-A2 = np.array([
-    [1, 1, 1, 1], 
-    [np.exp(-2), np.exp(-1), 1, np.exp(1)],
-    [4, 1, 0, 1],
-    [4*np.exp(-2), np.exp(-1), 0, np.exp(1)],
-])
+eta = 0.8*0.0987
+w = 0.0987
+varphi = np.sqrt(w)
 
-B2 = np.array([-1, -np.exp(-3), -9, -9*np.exp(-3)])
-
-A2_inv = np.linalg.inv(A2)
-a2, b2, c2, d2 = np.dot(A2_inv,B2)
-
-def phi_1(x):
-    return np.exp(-(4*x)/(2*L)) + a1*np.exp(-(3*x)/(2*L)) + b1*np.exp(-(2*x)/(2*L)) + c1*np.exp(-x/(2*L)) + d1
-
-def d4_phi_1(x):
-    return (256*np.exp(-(4*x)/(2*L)) + 81*a1*np.exp(-(3*x)/(2*L)) + 16*b1*np.exp(-(2*x)/(2*L)) + c1*np.exp(-x/(2*L))) / (16*L**4)
-
-
-def phi_2(x):
-    return np.exp(-(3*x)/(2*L)) + a2*np.exp(-(2*x)/(2*L)) + b2*np.exp(-x/(2*L)) + c2 + d2*np.exp(x/(2*L))
-
-def d4_phi_2(x):
-    return (81*np.exp(-(3*x)/(2*L)) + 16*a2*np.exp(-(2*x)/(2*L)) + b2*np.exp(-x/(2*L)) + d2*np.exp(x/(2*L))) / (16*L**4)
-
-def integrand_11(x):
-    return (d4_phi_1(x)) * (phi_1(x))
-
-def integrand_21(x):
-    return (d4_phi_2(x)) * (phi_1(x))
-
-def integrand_12(x):
-    return (d4_phi_1(x)) * (phi_2(x))
-
-def integrand_22(x):
-    return (d4_phi_2(x)) * (phi_2(x))
-
-I11 = quad(integrand_11, 0, 2*L)[0]
-I21 = quad(integrand_21, 0, 2*L)[0]
-I12 = quad(integrand_12, 0, 2*L)[0]
-I22 = quad(integrand_22, 0, 2*L)[0]
+I = calculate_integrads(w)
 
 U = np.array([
-    [I11, I21, -phi_1(L)], 
-    [I12, I22, -phi_2(L)],
-    [phi_1(L), phi_2(L), 0]
+    [I[1][1], I[2][1], I[3][1], I[4][1], I[5][1], -phi_1(L)], 
+    [I[1][2], I[2][2], I[3][2], I[4][2], I[5][2], -phi_2(L)],
+    [I[1][3], I[2][3], I[3][3], I[4][3], I[5][3], -phi_3(L)],
+    [I[1][4], I[2][4], I[3][4], I[4][4], I[5][4], -phi_4(L)],
+    [I[1][5], I[2][5], I[3][5], I[4][5], I[5][5], -phi_5(L)],
+    [phi_1(L), phi_2(L), phi_3(L), phi_4(L), phi_5(L), 0],
 ])
 
-V = np.array([phi_1(L/2), phi_2(L/2), 0])
+W_wrm_t = []
+for t in [0]:
+    V = np.array([
+        phi_1(L/2)*np.cos(eta*t) / np.cos(w*t), 
+        phi_2(L/2)*np.cos(eta*t) / np.cos(w*t),
+        phi_3(L/2)*np.cos(eta*t) / np.cos(w*t),
+        phi_4(L/2)*np.cos(eta*t) / np.cos(w*t),
+        phi_5(L/2)*np.cos(eta*t) / np.cos(w*t),
+        0
+    ])
 
-U_inv = np.linalg.inv(U)
-alpha1, alpha2, Z = np.dot(U_inv,V)
+    U_inv = np.linalg.inv(U)
+    alpha1, alpha2, alpha3, alpha4, alpha5, Z = np.dot(U_inv,V)
 
-S_wrm = np.arange(0,2*L+1,1)
-W_wrm = np.array([alpha1*phi_1(s) + alpha2*phi_2(s) for s in S_wrm])
+    step = 0.2
+    S = np.arange(0, 2*L+step/2, step)
+    W_t = [alpha1*phi_1(s) + alpha2*phi_2(s) + alpha3*phi_3(s) + alpha4*phi_4(s) + alpha5*phi_5(s) for s in S]
+        
+    plt.plot(S, W_t, marker="o", color="blue")
+    W_wrm_t.append(copy.deepcopy(W_t))
 
-plt.plot(S_wrm, W_wrm, marker="o", color="orange")
 plt.grid()
 plt.show()

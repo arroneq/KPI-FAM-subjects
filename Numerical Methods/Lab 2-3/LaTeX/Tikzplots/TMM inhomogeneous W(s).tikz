@@ -1,0 +1,49 @@
+\begin{tikzpicture}
+    \begin{axis}[
+        height = 0.47\linewidth,
+        width = 0.85\linewidth,
+        xlabel={Координата балки $s$},
+        ylabel={Значення переміщення $W(s,t_{\max})$},
+        scale only axis,
+        scaled y ticks=false,
+        xmin=-1, xmax=21,
+        scaled y ticks=base 10:-4, 
+        ymin=-9.5*10^4, ymax=9.5*10^4, 
+        % ytick distance=0.001,
+        % yticklabel style={
+        %     /pgf/number format/.cd,
+        %     fixed,
+        %     fixed zerofill,
+        %     precision=2,
+        %     /tikz/.cd
+        % }, 
+        grid=both,
+        grid style={draw=gray!30},
+        minor grid style={draw=gray!10},
+        minor x tick num=3,
+        minor y tick num=3,
+        % reverse legend,
+        legend style={                       % customize the legend style
+            at={(0.975,0.95)},               % position the legend at the top right corner of the plot
+            font=\small,                     % set the font size of the legend
+            anchor=north east,               % anchor the legend to the north east corner
+            cells={anchor=west}              % align the legend text to the left
+        },
+    ]
+        \addplot[gray!50, dash pattern={on 7pt off 4pt}, line width=1pt, forget plot] table {
+            -10 0
+            30 0
+        };
+        
+        \addplot[blue!80, line width=2pt] table[x=s, y=tmax] {Data/TMM inhomogeneous W(s).txt};
+
+        % \addplot[blue!60, line width=2pt] table[x=s, y=tmax] {Data/TMM inhomo W(s) (1-5).txt};
+        % \addlegendentry{\raisebox{0.2cm}{\ $W(s,t) = \sum\limits_{j=1}^{5} F_j(s)\, T_j(t)$}}
+
+        \addplot[blue!80, only marks, mark=*, mark size=3pt, forget plot] table {
+            0 0
+            10 0
+            20 0
+        };
+    \end{axis}
+\end{tikzpicture}

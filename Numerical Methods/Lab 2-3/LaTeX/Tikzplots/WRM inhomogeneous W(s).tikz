@@ -1,0 +1,50 @@
+\begin{tikzpicture}
+    \begin{axis}[
+        height = 0.47\linewidth,
+        width = 0.85\linewidth,
+        xlabel={Координата балки $s$},
+        ylabel={Значення переміщення $W(s,t_{\max})$},
+        scale only axis,
+        scaled y ticks=false,
+        xmin=-1, xmax=21,
+        scaled y ticks=base 10:-5, 
+        ymin=-1.1*10^5, ymax=1.1*10^5, 
+        % ytick distance=0.001,
+        yticklabel style={
+            /pgf/number format/.cd,
+            fixed,
+            fixed zerofill,
+            precision=1,
+            /tikz/.cd
+        }, 
+        grid=both,
+        grid style={draw=gray!30},
+        minor grid style={draw=gray!10},
+        minor x tick num=3,
+        minor y tick num=3,
+        reverse legend,
+        legend style={                       % customize the legend style
+            at={(0.975,0.95)},               % position the legend at the top right corner of the plot
+            font=\small,                     % set the font size of the legend
+            anchor=north east,               % anchor the legend to the north east corner
+            cells={anchor=west}              % align the legend text to the left
+        },
+    ]
+        \addplot[gray!50, dash pattern={on 7pt off 4pt}, line width=1pt, forget plot] table {
+            -10 0
+            30 0
+        };
+
+        \addplot[orange!80, line width=2pt] table[x=s, y=tmax] {Data/WRM inhomogeneous W(s).txt};
+        \addlegendentry{\ Метод МЗЗ ($M=5$ базових функцій)}
+
+        \addplot[blue!80, line width=2pt] table[x=s, y=tmax] {Data/TMM inhomogeneous W(s).txt};
+        \addlegendentry{\ Метод МПП (класичний підхід)}
+
+        \addplot[blue!80, only marks, mark=*, mark size=3pt, forget plot] table {
+            0 0
+            10 0
+            20 0
+        };
+    \end{axis}
+\end{tikzpicture}

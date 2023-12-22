@@ -3,7 +3,7 @@
         height=0.4\linewidth,
         width=0.85\linewidth,
         xlabel={Значення власної частоти $\omega$},
-        ylabel={Значення $A^{\text{\scriptsize МЗЗ}}_{\scalebox{0.6}{5\times5}}$},
+        ylabel={Значення $\det{A^{\text{\scriptsize МЗЗ}}_{\scalebox{0.6}{5\times5}}}$},
         scale only axis,
         xmin=-0.05, xmax=1.05, 
         ymin=-1.125*1e-28, ymax=1.125*1e-28,

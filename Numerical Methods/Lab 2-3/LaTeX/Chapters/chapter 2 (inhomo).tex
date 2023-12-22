@@ -1,0 +1,415 @@
+\subsection*{Деталізація поставленої задачі за МПП}
+\addcontentsline{toc}{subsection}{Деталізація поставленої задачі за МПП}
+
+Розглянемо задачу динамічного деформування балки під дією зовнішньої сили в точці $L/2$ з частотою $\eta$ згідно із співвідношенням~\eqref{eq: united d.e.}:
+\begin{equation}\label{eq: inhomogeneous d.e.}
+    \frac{\partial^4 W(s,t)}{\partial s^4} + \frac{\partial^2 W(s,t)}{\partial t^2} = p_{ex}(s,t) = p_0\,\delta(s-L/2) \cos{\eta t}
+\end{equation}
+із чотирма граничними умовами
+\begin{align}\label{eq: inhomogeneous edge conditions}
+    W(0,t)=0, && W(2L,t)=0, && \frac{\partial^2W(0,t)}{\partial s^2}=0, && \frac{\partial^2W(2L,t)}{\partial s^2}=0
+\end{align}
+та обмеженням в точці опори
+\begin{align}\label{eq: inhomogeneous central condition}
+    W(L,t)=0
+\end{align}
+
+\subsubsection*{Переміщення за класичним методом МПП}
+\addcontentsline{toc}{subsubsection}{Переміщення за класичним методом МПП}
+
+Визначимо рівняння зв'язку для кожного елемента. Підкреслимо, що згідно з теорією диференціальних рівнянь, переміщення складатиметься із суми розв'язку однорідної та неодінорідної частин рівняння~\eqref{eq: inhomogeneous d.e.}:
+\begin{equation}
+    W(s,t) = W_{\text{oдн}}(s,t) + \widehat{W}(s,t)
+\end{equation}
+
+Розв'язок однорідного рівняння у вигляді $W_{\text{oдн}}(s,t) = W(s)\cos{\omega t}$, де $\omega$~--- власна частота коливання системи, наведений у виразі~\eqref{eq: matrix field equations for element 1}. Пошук розв'язку неоднорідної частини спиратиметься на певний хід міркувань. 
+
+Перш за все, нехай покладемо часову складову переміщення $\widehat{W}(s,t)$ пропорційною часовій складовій зовнішнього навантаження: $\widehat{W}(s,t)=\widehat{W}(s)\cos{\eta t}$. Відтак, підставивши цей вираз у~\eqref{eq: inhomogeneous d.e.}, часова компонента скоротиться, залишивши у рівнянні залежність лише від координати. 
+
+Наступним кроком налаштуємо розв'язок таким чином, щоб в точці $L/2$ дії зовнішньої сили справджувалися рівняння неперервності переміщення, кута згинання та згинального моменту, а співвідношення для поперечної сили враховувало б стрибок, рівний $p_0$. Іншими словами, нехай покладемо $\widehat{W}(s)=-p_0\, K_4(s-L/2)$. Відтак, в силу властивностей функцій Крилова, вдасться досягнути бажаного результату. 
+
+\newpage
+Таким чином, розглянемо елемент <<$1$>>: враховуючи дію зосередженої сили на другій половині елемента, рівняння зв'язку матимуть запис
+\begin{equation}\label{eq: matrix inhomo field equations for element 1}
+    \begin{pmatrix}
+        W(s)      \\
+        \theta(s) \\
+        M(s)      \\
+        Q(s)      \\
+    \end{pmatrix} =
+    \begin{pmatrix}
+        K_1(s)              & K_2(s)              & K_3(s)              & K_4(s) \\
+        k_{\omega}^4 K_4(s) & K_1(s)              & K_2(s)              & K_3(s) \\
+        k_{\omega}^4 K_3(s) & k_{\omega}^4 K_4(s) & K_1(s)              & K_2(s) \\
+        k_{\omega}^4 K_2(s) & k_{\omega}^4 K_3(s) & k_{\omega}^4 K_4(s) & K_1(s) \\
+    \end{pmatrix}
+    \begin{pmatrix}
+        W_0      \\
+        \theta_0 \\
+        M_0      \\
+        Q_0      \\
+    \end{pmatrix} - p_0
+    \begin{pmatrix}
+        K_4(s-L/2)   \\
+        K_3(s-L/2)   \\
+        K_2(s-L/2)   \\
+        K_1(s-L/2)   \\
+    \end{pmatrix},
+\end{equation}
+де $p_0$ вказуватиме на розподіл дії сили на першій чи другій частині елемента <<1>>:
+\begin{align}\label{eq: gamma}
+    p_0 = 
+    \begin{cases*}
+        0, & $s \in [0,L/2]$ \\ 
+        1, & $s \in [L/2,L]$ \\ 
+    \end{cases*}
+\end{align}
+
+У подальших викладках буде продемонстровано, що відповідні рівняння спряження гарантуватимуть неперервність елемента <<$1$>> навіть попри неоднорідний розподіл зосередженої сили на різних частинах. 
+
+На елементі <<$2$>> (відрізок балки справа від опори) зосереджена сила не діє, тож покладаючи $p_0=0$ матимемо рівняння зв'язку виду
+\begin{equation}\label{eq: matrix inhomo field equations for element 2}
+    \begin{pmatrix}
+        W(s)      \\
+        \theta(s) \\
+        M(s)      \\
+        Q(s)      \\
+    \end{pmatrix} =
+    \begin{pmatrix}
+        K_1(s)              & K_2(s)              & K_3(s)              & K_4(s) \\
+        k_{\omega}^4 K_4(s) & K_1(s)              & K_2(s)              & K_3(s) \\
+        k_{\omega}^4 K_3(s) & k_{\omega}^4 K_4(s) & K_1(s)              & K_2(s) \\
+        k_{\omega}^4 K_2(s) & k_{\omega}^4 K_3(s) & k_{\omega}^4 K_4(s) & K_1(s) \\
+    \end{pmatrix}
+    \begin{pmatrix}
+        W_L      \\
+        \theta_L \\
+        M_L      \\
+        Q_L      \\
+    \end{pmatrix}
+\end{equation}
+
+Наостанок, введемо чотири рівняння, що відповідають глобальним граничним умовам~\eqref{eq: edge conditions}, та чотири рівняння спряження в точні опори (Табл.~\ref{table: transition equations}). Отже, матимемо повний комплект із 16 рівнянь для 16 невідомих (Табл.~\ref{table: variables numeration TMM}) системи. 
+
+Розв'язавши рівняння, матимемо змогу віднайти форму кривої дефорування балки довжиною $2L=20$ з проміжною опорою в точці $L$ та під дією зовнішньої сили в точці $L/2$ у довільний момент часу $t$, задавши значення власної частоти~$\omega$ та значення частоти $\eta$ зовнішньої сили. Приклад реалізації буде продемонстровано наприкінці цього розділу.
+
+\subsubsection*{Визначення власних частот (метод резонансу)}
+\addcontentsline{toc}{subsubsection}{Визначення власних частот (метод резонансу)}
+
+Наведено у цьому підрозділі альтернативний метод пошуку власних частот системи. Згідно з методом, власними частотами вважатимуться такі значення, які викликають резонанс із частотою дії зовнішньої сили. Іншими словами, в якості досліджуваного параметра обирається, наприклад, певна координата $s_0$ (в довільний момент часу $t$) і будується графік амплітуди її переміщень $W(s_0,t)$ від частоти $\eta$. Такі графіки називають амплітудно-частотною характеристикою (скорочено АЧХ).
+
+\newpage
+Тож нехай у рівняннях зв'язку~\eqref{eq: matrix inhomo field equations for element 1} -- \eqref{eq: matrix inhomo field equations for element 2} для балки довжини $2L=20$ параметризуємо частоту виключно через позначення $\eta$. Тоді покладемо досліджувану точку $s_0=1$, і, пробігаючи з кроком $10^{-4}$ значення частоти $\eta \in (0,1)$, побудуємо відповідну амплітудно-частотну характеристику (Рис.~\ref{pic: TMM classic resonant eigenvalues}).
+
+\vspace{0.4cm}
+\begin{figure}[H]\centering
+    \resizebox{\linewidth}{!}{\input{Tikzplots/TMM classic resonant eigenvalues.tikz}}
+    \caption{Амплітудно-частотна характеристика за МПП (класичний підхід)}
+    \label{pic: TMM classic resonant eigenvalues}
+\end{figure}
+
+Наведемо таблицю значень власних частот, отриманих в результаті розв'язку однорідної частини рівняння деформування балки у попередньому розділі:
+
+\vspace{0.4cm}
+\begin{table}[H]\centering
+    \begin{tblr}{
+            % hline{2}={1pt,solid},
+            % vline{2-8}={1pt,solid},
+            hlines={1pt,solid},
+            vlines={1pt,solid},
+            colspec={Q[2cm,c]Q[2cm,c]Q[2cm,c]Q[2cm,c]Q[2cm,c]},
+            row{1-2}={mode=math},
+        }
+        
+        \omega_{1} & \omega_{2} & \omega_{3} & \omega_{4} & \omega_{5} \\
+        0.0987     & 0.1542     & 0.3948     & 0.4996     & 0.8883     \\
+
+    \end{tblr}
+    \caption{Значення власних частот $\omega$ за МПП (однорідне рівняння)}
+    \label{table: TMM w M2L zero duplicated}
+\end{table}
+
+Водночас, з Рис.~\ref{pic: TMM classic resonant eigenvalues} бачимо, що резонанас викликають частоти, наведені у таблиці нижче (Табл.~\ref{table: eigenvalues classic TMM}).
+
+\vspace{0.4cm}
+\begin{table}[H]\centering
+    \begin{tblr}{
+            % hline{2}={1pt,solid},
+            % vline{2-8}={1pt,solid},
+            hlines={1pt,solid},
+            vlines={1pt,solid},
+            colspec={X[c]X[c]X[c]X[c]X[c]X[c]X[c]X[c]X[c]},
+            row{1-2}={mode=math},
+        }
+        
+        \eta_{1} & \eta_{2} & \eta_{3} & \eta_{4} & \eta_{5} & \eta_{6} & \eta_{7} & \eta_{8} & \eta_{9}  \\
+        0.0316   & 0.0986   & 0.1379   & 0.2424   & 0.3847   & 0.4702   & 0.6507   & 0.8883   & 0.9997    \\
+
+    \end{tblr}
+    \caption{Значення резонуючих частот за МПП (неоднорідне рівняння, класичний підхід)}
+    \label{table: eigenvalues classic TMM}
+\end{table}
+
+\subsubsection*{Переміщення за розкладом по власним формам}
+\addcontentsline{toc}{subsubsection}{Переміщення за розкладом по власним формам}
+
+Іншим підходом до пошуку розв'язку неоднорідного рівняння~\eqref{eq: inhomogeneous d.e.} є пошук шуканої функції переміщення як розкладу по власним формам. Тож скористаємося власними формами~\eqref{eq: TMM F1(s) eigenvector} -- \eqref{eq: TMM F5(s) eigenvector}, які задовільняють умовам~\eqref{eq: inhomogeneous edge conditions} й~\eqref{eq: inhomogeneous central condition}, та шукатимемо розв'язок неоднорідного рівняння у такому вигляді:
+\begin{equation}\label{eq: W(s) inhomogeneous assumption}
+    W(s,t) = \sum\limits_{j=1}^{5} F_j(s)\, T_j(t),
+\end{equation}
+де $\bigl( F_j(s) \bigr)_{j=\overline{1,5}}$~--- власні форми однорідного рівняння~\eqref{eq: homogeneous d.e.}. Після підстановки~\eqref{eq: W(s) inhomogeneous assumption} у~\eqref{eq: inhomogeneous d.e.}, неоднорідне рівняння отримає вид:
+\begin{equation}\label{eq: inhomogeneous equation}
+    \sum\limits_{j=1}^{5} \frac{d^4 F_j(s)}{d s^4}\,T_j(t) + \sum\limits_{j=1}^{5} \frac{d^2 T_j(t)}{d t^2}\,F_j(s) = p_0\,\delta(s-L/2) \cos{\eta t}
+\end{equation}
+
+Зауважимо, що в силу рівнянь зв'язку~\eqref{eq: matrix field equations for element 1} й \eqref{eq: matrix field equations for element 2} та враховуючи позначення $k_{\omega_j}^4=\omega_j^2$, для переміщення $W(s)$ (що аналогічно, для власних форм) справливо:
+\begin{equation}\label{eq: F^(4) shorting}
+    \frac{d^4 F_j(s)}{d s^4} = \omega_j^2 F_j(s),\ j=\overline{1,5},
+\end{equation}
+де $\bigl( \omega_j(s) \bigr)_{j=\overline{1,5}}$~--- власні числа за методом МПП (з Табл.~\ref{table: TMM w M2L zero}). Таким чином отримаємо рівняння:
+\begin{equation}\label{eq: edited inhomogeneous equation}
+    \sum\limits_{j=1}^{5} \omega_j^2 F_j(s)\,T_j(t) + \sum\limits_{j=1}^{5} \frac{d^2 T_j(t)}{d t^2}\,F_j(s) = p_0\,\delta(s-L/2) \cos{\eta t}
+\end{equation}
+
+Для подальших міркувань зазначимо, що власні форми є ортогональними в просторі $L^2$, тобто
+\begin{equation}
+    \forall j,k=\overline{1,5} : \int\limits_{0}^{2L} F_j(s)\,F_k(s)\,ds = 
+    \begin{cases}
+        0, & j \neq k \\
+        ||F_j(s)||, & j = k \\
+    \end{cases},
+\end{equation}
+де вираз $||F_j(s)||$ є нормою виду
+\begin{equation}\label{eq: L2 norm}
+    ||F_j(s)|| = \int\limits_{0}^{2L} F_j^2(s)\,ds,\ j=\overline{1,5}
+\end{equation}
+
+\newpage
+В такому разі, процедура почергового множення та інтегрування рівняння~\eqref{eq: edited inhomogeneous equation} за власними функціями $F_j(s)$ зведе його до системи диференціальних рівнянь відносно $T_j(t):$
+\begin{equation}\label{eq: searching T(t)}
+    \frac{d^2 T_j(t)}{dt^2} + \omega_j^2\,T_j(t) = \frac{1}{||F_j(s)||} \int\limits_{0}^{2L} p_0\,\delta(s-L/2) \cos{\eta t} \, F_j(s)\,ds,\ j=\overline{1,5}
+\end{equation}
+
+Тоді, використовуючи властивість~\eqref{eq: delta Dirac feature 2} дельта-функції Дірака, матимемо
+\begin{equation}\label{eq: edited searching T(t)}
+    \frac{d^2 T_j(t)}{dt^2} + \omega_j^2\,T_j(t) = p_0\,\frac{F_j(L/2)}{||F_j(s)||}\cos{\eta t} \equiv p_j \cos{\eta t},\ j=\overline{1,5}
+\end{equation}
+
+Відтак, частинний розв'язок рівняння~\eqref{eq: edited searching T(t)}, пропорційний $\cos{\eta t}$, визначатиметься таким виразом:
+\begin{equation}\label{eq: Duhamel's integral}
+    T_j(t) = \frac{p_j}{\omega_j^2-\eta^2} \cos{\eta t},\ j=\overline{1,5}
+\end{equation}
+
+Отже, задавши значення власної частоти $\omega$ та значення частоти~$\eta$ зовнішньої сили, переміщення балки довжиною $2L=20$ з проміжною опорою в точці $L$ та під дією зовнішньої сили в точці $L/2$ у довільний момент часу $t$ визначатиметься виразом~\eqref{eq: W(s) inhomogeneous assumption}. Приклад реалізації буде наведено наприкінці цього розділу.
+
+\subsubsection*{Визначення власних частот (метод резонансу)}
+\addcontentsline{toc}{subsubsection}{Визначення власних частот (метод резонансу)}
+
+За допомогою розв'язку МПП~\eqref{eq: W(s) inhomogeneous assumption} як розкладу по власним формам, скористаємося альтернативним методом пошуку власних частот системи, прослідкувавши за значеннями частот, які викликають резонанс із частотою дії зовнішньої сили. Тож нехай для балки довжини $2L=20$ покладемо досліджувану точку $s_0=1$, і, пробігаючи з кроком $10^{-4}$ значення частоти $\eta \in (0,1)$, побудуємо відповідну амплітудно-частотну характеристику (Рис.~\ref{pic: TMM eigenvectors resonant eigenvalues}).
+
+Аналогічним чином наведемо таблицю значень власних частот, отриманих в результаті розв'язку однорідної частини рівняння деформування балки у попередньому розділі (Табл.~\ref{table: TMM w M2L zero trilicated}), та таблицю частот, які викликають резонанс на Рис.~\ref{pic: TMM eigenvectors resonant eigenvalues} (Табл.~\ref{table: eigenvalues eigenvectors TMM}).
+
+\vspace{0.4cm}
+\begin{table}[H]\centering
+    \begin{tblr}{
+            % hline{2}={1pt,solid},
+            % vline{2-8}={1pt,solid},
+            hlines={1pt,solid},
+            vlines={1pt,solid},
+            colspec={Q[2cm,c]Q[2cm,c]Q[2cm,c]Q[2cm,c]Q[2cm,c]},
+            row{1-2}={mode=math},
+        }
+        
+        \omega_{1} & \omega_{2} & \omega_{3} & \omega_{4} & \omega_{5} \\
+        0.0987     & 0.1542     & 0.3948     & 0.4996     & 0.8883     \\
+
+    \end{tblr}
+    \caption{Значення власних частот $\omega$ за МПП (однорідне рівняння)}
+    \label{table: TMM w M2L zero trilicated}
+\end{table}
+
+\vspace{0.4cm}
+\begin{figure}[H]\centering
+    \resizebox{\linewidth}{!}{\input{Tikzplots/TMM eigenvectors resonant eigenvalues.tikz}}
+    \caption{Амплітудно-частотна характеристика за МПП (розклад за п'ятьма власними формами)}
+    \label{pic: TMM eigenvectors resonant eigenvalues}
+\end{figure}
+
+\vspace{0.4cm}
+\begin{table}[H]\centering
+    \begin{tblr}{
+            % hline{2}={1pt,solid},
+            % vline{2-8}={1pt,solid},
+            hlines={1pt,solid},
+            vlines={1pt,solid},
+            colspec={Q[2cm,c]Q[2cm,c]Q[2cm,c]Q[2cm,c]Q[2cm,c]},
+            row{1-2}={mode=math},
+        }
+        
+        \eta_{1} & \eta_{2} & \eta_{3} & \eta_{4} & \eta_{5} \\
+        0.0988   & 0.1543   & 0.3948   & 0.4996   & 0.8883    \\
+ 
+    \end{tblr}
+    \caption{Значення резонуючих частот за МПП (неоднорідне рівняння, розклад за п'ятьма власними формами)}
+    \label{table: eigenvalues eigenvectors TMM}
+\end{table}
+
+\subsection*{Деталізація поставленої задачі за МЗЗ}
+\addcontentsline{toc}{subsection}{Деталізація поставленої задачі за МЗЗ}
+
+Аналогічно до розділу на стр.~\pageref{section: WRM detalization}, застосуємо метод зважених залишків до заданої задачі деформування балки, але із урахуванням дії зовнішньої сили частоти $\eta$. 
+
+Змоделюємо проміжну точку опори балки як дію зосередженої сили~--- дельта-функції Дірака в точці $L$~--- з невідомою інтенсивністю $z$ та пропорційною функції часу $\cos{\omega t}$, де $\omega$ матиме сенс власної частоти коливання. Відтак, задача деформування з граничними умовами~\eqref{eq: edge conditions} описуватиметься рівнянням
+\begin{equation}\label{eq: inhomogeneous d.e. WRM}
+    \frac{\partial^4 W(s,t)}{\partial s^4} + \frac{\partial^2 W(s,t)}{\partial t^2} = z\delta(s-L)\cos{\omega t} + p_0\,\delta(s-L/2) \cos{\eta t}
+\end{equation}
+
+\newpage
+Наближений аналітичний вигляд функції переміщення $W(s,t)$ покладемо так:
+\begin{equation}\label{eq: inhomo W(s) M=2 approximation}
+    W(s,t) = \left[ a_1\phi_1(s) + a_2\phi_2(s) \right] \cos{\omega t},
+\end{equation}
+де набір з $M=2$ базових функцій обрано з експоненціальної сім'ї:
+\begin{align}
+    & \phi_1(s) = e^{-\frac{4s}{2L}} + C_{11}e^{-\frac{3s}{2L}} + C_{12}e^{-\frac{2s}{2L}} + C_{13}e^{-\frac{s}{2L}} + C_{14}, \label{eq: inhomo M=2 trial phi1(x)} \\
+    & \phi_2(s) = e^{-\frac{3s}{2L}} + C_{21}e^{-\frac{2s}{2L}} + C_{22}e^{-\frac{s}{2L}} + C_{23} + C_{24}e^{\frac{s}{2L}} \label{eq: inhomo M=2 trial phi2(x)},
+\end{align}
+при цьому в силу нульових граничних умов~\eqref{eq: edge conditions} коефіцієнти $C_{ij}$ дорівнюють:
+
+\vspace{0.4cm}
+\begin{table}[H]\centering
+    \begin{tblr}{
+            % hline{2}={1pt,solid},
+            % vline{2-8}={1pt,solid},
+            hlines={1pt,solid},
+            vlines={1pt,solid},
+            colspec={X[c]X[c]X[c]X[c]X[c]X[c]X[c]X[c]},
+            row{1-2}={mode=math},
+        }
+        
+        C_{11}  & C_{12} & C_{13} & C_{14}  & C_{21}  & C_{22} & C_{23}  & C_{24} \\
+        -2.2834 & 1.0149 & 0.4912 & -0.2227 & -2.9305 & 2.6637 & -0.7915 & 0.0583 \\
+
+    \end{tblr}
+    \caption{Значення коефіцієнтів базових функцій~\eqref{eq: inhomo M=2 trial phi1(x)} й \eqref{eq: inhomo M=2 trial phi2(x)}}
+    \label{table: inhomo A coefficients values}
+\end{table}
+
+Враховуючи наведену формалізацію системи, залишок матиме вид:
+\begin{multline}\label{eq: inhomo R(x) residual for W(s)}
+    R(s,t) = a_1 \left[ \frac{d^4\phi_1(s)}{ds^4} - \omega^2 \phi_1(s) \right] + a_2 \left[ \frac{d^4\phi_2(s)}{ds^4} - \omega^2 \phi_2(s) \right] - \\ 
+    - z\delta(s-L) - p_0\,\delta(s-L/2)\,\frac{\cos{\eta t}}{\cos{\omega t}} 
+\end{multline}
+
+Тоді з урахуванням умови нульового переміщення в точці опори, система рівнянь для визначення невідомих коефіцієнтів $a_1,a_2$ та $z$ згідно з методом зважених залишків записуватиметься на проміжку від $0$ до $2L$ таким чином:
+\begin{align}
+    & \int\limits_{0}^{2L} R(s,t)\, \phi_1(s)\, ds = 0, \\
+    & \int\limits_{0}^{2L} R(s,t)\, \phi_2(s)\, ds = 0, \\
+    & W(L) = 0, 
+\end{align}
+що розписується у систему 
+\begin{multline}
+    a_1\int\limits_{0}^{2L} \left[ \phi_1^{(4)}(s) - \omega^2 \phi_1(s) \right] \phi_1(s)\, ds + a_2\int\limits_{0}^{2L} \left[ \phi_2^{(4)}(s) - \omega^2 \phi_2(s) \right] \phi_1(s)\, ds\, - \\ 
+    - z\phi_1(L) - p_0\,\phi_1(L/2)\,\frac{\cos{\eta t}}{\cos{\omega t}} = 0
+\end{multline}
+\begin{multline}
+    a_1\int\limits_{0}^{2L} \left[ \phi_1^{(4)}(s) - \omega^2 \phi_1(s) \right] \phi_2(s)\, ds + a_2\int\limits_{0}^{2L} \left[ \phi_2^{(4)}(s) - \omega^2 \phi_2(s) \right] \phi_2(s)\, ds\, - \\
+    - z\phi_2(L) - p_0\,\phi_2(L/2)\,\frac{\cos{\eta t}}{\cos{\omega t}} = 0
+\end{multline}
+\begin{multline}
+    a_1\phi_1(L) + a_2\phi_2(L) = 0 \hfill
+\end{multline}
+
+Позначивши відповідні визначені інтеграли через позначки $I_{ij}$, отримана система рівнянь записуватиметься у матричному вигляді ось так:
+\begin{equation}\label{eq: inhmo residuals matrix equation}
+    \begin{pmatrix}
+        I_{11}(\omega)    & I_{21}(\omega)    & -\phi_1(L) \\
+        I_{12}(\omega)    & I_{22}(\omega)    & -\phi_2(L) \\
+        \phi_1(L)         & \phi_2(L)         & 0          \\
+    \end{pmatrix}
+    \begin{pmatrix}
+        a_1 \\
+        a_2 \\
+        z    \\
+    \end{pmatrix} = 
+    \begin{pmatrix}
+        p_0\,\phi_1(L/2)\,\cos{\eta t} / \cos{\omega t} \\
+        p_0\,\phi_2(L/2)\,\cos{\eta t} / \cos{\omega t} \\
+        0                                                \\
+    \end{pmatrix}
+\end{equation}
+
+Поклавши значення власної частоти $\omega$ та значення частоти~$\eta$ зовнішньої сили та розв'язавши матричне рівняння~\eqref{eq: inhmo residuals matrix equation}, за формулою~\eqref{eq: inhomo W(s) M=2 approximation} можемо побудувати траєкторію деформування балки довжиною $2L=20$ з проміжною опорою в точці~$L$ та під дією зовнішньої сили в точці~$L/2$ у довільний момент часу $t$.
+
+Зауважимо, що аналогічні викладки справедливі і у випадку набору $M=5$ базових функцій виду~\eqref{eq: M=5 trial phi1(x)} -- \eqref{eq: M=5 trial phi5(x)}. У викладках нижче будуть розглядатися результати методу МЗЗ саме у випадку набору з п'яти базових функцій.   
+
+\subsubsection*{Визначення власних частот (метод резонансу)}
+\addcontentsline{toc}{subsubsection}{Визначення власних частот (метод резонансу)}
+
+Використовуючи отриманий наближений аналітичний розв'язок МЗЗ, визначимо значення частот, які викликають резонанс із частотою дії зовнішньої сили. Для цього параметризуємо частоту у розв'язку МЗЗ виключно через позначення~$\eta$. І тоді, нехай для балки довжини $2L=20$ покладемо досліджувану точку $s_0=1$, й, пробігаючи з кроком $10^{-4}$ значення частоти $\eta \in (0,1)$, побудуємо відповідну амплітудно-частотну характеристику (Рис.~\ref{pic: WRM resonant eigenvalues}).
+
+Значення власних частот, отриманих в результаті розв'язку однорідної частини рівняння деформування балки у попередньому розділі, наведені у Табл.~\ref{table: TMM w M2L zero quadruplicated}.
+
+\vspace{0.4cm}
+\begin{table}[H]\centering
+    \begin{tblr}{
+            % hline{2}={1pt,solid},
+            % vline{2-8}={1pt,solid},
+            hlines={1pt,solid},
+            vlines={1pt,solid},
+            colspec={Q[2cm,c]Q[2cm,c]Q[2cm,c]Q[2cm,c]Q[2cm,c]},
+            row{1-2}={mode=math},
+        }
+        
+        \omega_{1} & \omega_{2} & \omega_{3} & \omega_{4} & \omega_{5} \\
+        0.0987     & 0.1542     & 0.3948     & 0.4996     & 0.8883     \\
+
+    \end{tblr}
+    \caption{Значення власних частот $\omega$ за МПП (однорідне рівняння)}
+    \label{table: TMM w M2L zero quadruplicated}
+\end{table}
+
+\vspace{0.4cm}
+\begin{figure}[H]\centering
+    \resizebox{\linewidth}{!}{\input{Tikzplots/WRM resonant eigenvalues.tikz}}
+    \caption{Амплітудно-частотна характеристика за МЗЗ ($M=5$ базових функцій)}
+    \label{pic: WRM resonant eigenvalues}
+\end{figure}
+
+Таблицю частот, які викликають резонанс на Рис.~\ref{pic: WRM resonant eigenvalues}, продемонстровано нижче (Табл.~\ref{table: eigenvalues WRM}).
+
+\vspace{0.4cm}
+\begin{table}[H]\centering
+    \begin{tblr}{
+            % hline{2}={1pt,solid},
+            % vline{2-8}={1pt,solid},
+            hlines={1pt,solid},
+            vlines={1pt,solid},
+            colspec={Q[2cm,c]Q[2cm,c]Q[2cm,c]Q[2cm,c]Q[2cm,c]},
+            row{1-2}={mode=math},
+        }
+        
+        \eta_{1} & \eta_{2} & \eta_{3} & \eta_{4}  \\
+        0.0988   & 0.1576   & 0.4252   & 0.6131    \\
+ 
+    \end{tblr}
+    \caption{Значення резонуючих частот за МЗЗ ($M=5$ базових функцій)}
+    \label{table: eigenvalues WRM}
+\end{table}
+
+
+
+\subsection*{Візуалізація кривої деформування балки}
+\addcontentsline{toc}{subsection}{Візуалізація кривої деформування балки}
+
+Порівняємо отримані розв'язки методів МПП та МЗЗ для неоднорідного рівняння динамічного деформування балки довжиною $2L=20$ з проміжною опорою в точці~$L$ та під дією зовнішньої сили в точці~$L/2$. Власну частоту покладемо рівною $\omega=0.0987$ (перша власна частота з Табл.~\ref{table: TMM w M2L zero}), а частоту дії зовнішньої сили~--- як $\eta = 0.8\cdot\omega = 0.0790$.
+
+Крім того, сталу складову $p_0$ зовнішньої сили в методах МПП (розклад по власним формам) та МЗЗ вважатимемо рівною одиниці. Також зауважимо, що для співмірного співставлення з іншими методами, розв'язок за МПП (розклад по власним формам) було віднормовано. На рисунку нижче (Рис.~\ref{pic: comparison (TMM vs WRM)}) зображено траєкторії у фіксований момент часу $t_{\max}$, який відповідає найвищій амплітуді переміщення балки.
+
+Бачимо, що графіки у випадку різних методів практично накладаються. Це вказує на те, що отримані розв'язки побудовані коректно.
+
+\begin{figure}[H]\centering
+    \resizebox{\linewidth}{!}{\input{Tikzplots/comparison (TMM vs WRM).tikz}}
+    \caption{Порівняльний графік найвищих амплітуд кривих деформування балки під дією зовнішньої сили}
+    \label{pic: comparison (TMM vs WRM)}
+\end{figure}

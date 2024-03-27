@@ -1,0 +1,92 @@
+% !TeX program = lualatex
+% !TeX encoding = utf8
+% !TEX options = -shell-escape "%DOC%" % https://stackoverflow.com/a/69535567
+
+\documentclass[
+    12pt, 
+    border=2mm,
+    convert={
+        density=500,
+        % size=1080x800,
+        outext=.png
+    }
+]{standalone}
+
+\usepackage{fontspec}
+% \setmainfont{Times New Roman}
+\setmainfont{CMU serif}
+\usepackage[english, ukrainian]{babel}
+
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\pgfplotsset{compat=1.3}
+
+\usepackage{amsmath, amssymb}
+
+\begin{document}
+
+% ------------------------ VARIABLES NUMERATION ------------------------
+
+\begin{tikzpicture}
+    % mark apexes of a square
+    \coordinate (A1) at (0,0);
+    \coordinate (B1) at (3,0);
+    \coordinate (C1) at (0,3);
+    \coordinate (D1) at (3,3);
+
+    % draw the square
+    \draw[very thick] (C1) -- (A1) -- (B1) -- (D1) -- (C1);
+
+    \node [left] at (0,1.85) {$T^x_{i,0}$};
+    \node [left] at (0,1.15) {$Q^x_{i,0}$};
+
+    \node [right] at (3,1.85) {$T^x_{i,e}$};
+    \node [right] at (3,1.15) {$Q^x_{i,e}$};
+
+    \node at (1.5,1.5) {$A_i\, T_{c,i}$};
+
+    \draw[very thick] (A1) -- node [below] {$T^y_{i,0}\, Q^y_{i,0}$} (B1);
+    \draw[very thick] (D1) -- node [above] {$T^y_{i,e}\, Q^y_{i,e}$} (C1);
+
+    \node at (6,1.5) {$\Longleftrightarrow$};
+
+    % mark apexes of a square
+    \coordinate (A2) at (9,0);
+    \coordinate (B2) at (12,0);
+    \coordinate (C2) at (9,3);
+    \coordinate (D2) at (12,3);
+
+    % draw the square
+    \draw[very thick] (C2) -- (A2) -- (B2) -- (D2) -- (C2);
+
+    \node [left] at (9,1.75) {$x_0$};
+    \node [left] at (9,1.25) {$x_1$};
+
+    \node [right] at (12,1.75) {$x_4$};
+    \node [right] at (12,1.25) {$x_5$};
+
+    \node at (10.5,1.5) {$x_8\, x_9$};
+
+    \draw[very thick] (A2) -- node [below] {$x_2\, x_3$} (B2);
+    \draw[very thick] (D2) -- node [above] {$x_6\, x_7$} (C2);
+
+    % mark blue points in each apex
+    \foreach \point in {A1,B1,C1,D1,A2,B2,C2,D2}{
+        \fill[black] (\point) circle [radius=2.5pt];
+    }
+\end{tikzpicture}
+
+% ------------------------ ELEMENT NUMERATION ------------------------
+
+% \begin{tikzpicture}
+%     \newcounter{element}
+%     \setcounter{element}{0}
+%     \foreach \i in {0,1,2}{
+%         \foreach \j in {0,1,2}{
+%             \node at (\j,\i) [rectangle,draw,minimum size=1cm] {\theelement};
+%             \stepcounter{element}
+%         }
+%     }
+% \end{tikzpicture}
+
+\end{document}

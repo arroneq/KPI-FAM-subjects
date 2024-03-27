@@ -21,7 +21,11 @@
 /English/*
 !/English/*/
 
+/Weekly diploma reports/*/*
+!/Weekly diploma reports/*/*/
+
 !*.ipynb
+!*.joblib
 !*.py
 !*.txt
 !*.png

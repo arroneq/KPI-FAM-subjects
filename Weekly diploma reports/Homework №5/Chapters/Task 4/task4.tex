@@ -1,0 +1,214 @@
+\subsection*{Задача 4. Gamma-Poisson empirical Bayes}
+\addcontentsline{toc}{section}{Задача 4. Gamma-Poisson empirical Bayes}
+
+\setcounter{subsection}{4}
+\setcounter{equation}{0}
+
+\subsubsection*{Постановка задачі}
+\addcontentsline{toc}{subsection}{Постановка задачі}
+
+Розглянемо модель такого вигляду:
+\begin{align}
+    & X_{ij} \,|\, \theta_i \overset{\scalebox{0.5}{ind}}{\sim} \mathrm{Poiss}(\theta_i),\ i=\overline{1,n},\ j=\overline{1,m}, \label{eq: X | theta} \\
+    & \theta_i \overset{\scalebox{0.5}{i.i.d.}}{\sim} \mathrm{Gamma}(k,\widehat{\sigma}),\ i=\overline{1,n},  \label{eq: theta}
+\end{align}
+при цьому $k$ є відомим, а $\widehat{\sigma}$ визначене як оцінка максимальної правдоподібності. Завдання полягає у тому, щоб віднайти баєсову оцінку параметра~$\theta_i$, тобто математичне сподівання апостеріорного розподілу параметра~$\theta_i$. Також зазначимо, що відповідно до~\eqref{eq: X | theta} та~\eqref{eq: theta} дані організовані таким чином:
+\begin{equation}
+    \begin{gathered}
+        \theta_1 : X_{11},X_{12},\ldots,X_{1m} \\
+        \theta_2 : X_{21},X_{22},\ldots,X_{2m} \\
+        \hfill \ldots \hfill  \\
+        \theta_n : X_{n1},X_{n2},\ldots,X_{nm}
+    \end{gathered} 
+\end{equation}
+
+Іншими словами, для кожної згенерованої випадкової величини~$\theta_i$ з Гамма-розподілу~\eqref{eq: theta} генерується набір випадкових величин~$X_{i1},X_{i2},\ldots,X_{im}$ з розподілу Пуасона з параметром~$\theta_i$.
+
+\subsubsection*{Допоміжні теоретичні викладки}
+\addcontentsline{toc}{subsection}{Допоміжні теоретичні викладки}
+
+Перш за все, наведемо імовірнісні розподіли випадкових величин, про які ітиме мова. Нехай неперервна випадкова величина~$\xi$ має Гамма-розподіл з параметрами~$\alpha>0$ та~$\beta>0:$
+\begin{equation}
+    \xi \sim Gamma(\alpha,\beta)
+\end{equation}
+
+На рівні позначень існує дві еквівалентні параметризації~$\alpha$ та~$\beta:$
+\begin{itemize}
+    \item <<shape parameter>>~$\alpha=k$ та <<scale parameter>>~$\beta=\sigma$;
+    \item <<shape parameter>>~$\alpha=k$ та <<inverse scale parameter>>~$\beta=1/\sigma$, який ще називають <<rate parameter>>.
+\end{itemize}
+
+Відповідно до кожної з параметризацій щільність розподілу~$f_{\xi}(x)$ має відповідний вигляд. У випадку <<scale parameter>>~$\beta=\sigma:$ 
+\begin{equation}\label{eq: dGamma scale parameter}
+    \xi \sim \mathrm{Gamma}(k,\sigma) \ \Longleftrightarrow \ f_{\xi}(x) = \frac{x^{k-1}}{\sigma^{k}\Gamma(k)}\, e^{-x/\sigma}\, \mathbbm{1}(x>0), 
+\end{equation}
+де, відповідно, математичне сподівання та дисперсія складають
+\begin{equation}\label{eq: dGamma scale parameter mean}
+    \mathbb{E}\xi = k\sigma,\ \mathrm{Var}\xi=k\sigma^2
+\end{equation}
+
+У випадку ж <<rate parameter>>~$\beta=1/\sigma:$ 
+\begin{equation}\label{eq: dGamma rate parameter}
+    \xi \sim \mathrm{Gamma}(k,1/\sigma) \ \Longleftrightarrow \ f_{\xi}(x) = \frac{x^{k-1}}{\Gamma(k)}\,\sigma^{k} e^{-x\sigma}\, \mathbbm{1}(x>0), 
+\end{equation}
+де математичне сподівання та дисперсія
+\begin{equation}\label{eq: dGamma rate parameter mean}
+    \mathbb{E}\xi = \frac{1}{\sigma},\ \mathrm{Var}\xi=\frac{1}{\sigma^2}
+\end{equation}
+
+\begin{remark}
+    Згідно з умовою завдання, у роботі розглядатиметься Гамма-розподіл саме зі <<scale parameter>>~$\beta=\sigma$. Спершу я не звернув уваги на цю приписку в умові завдання (адже раніше не зустрічав різну параметризацію у Гамма-розподілі), що спричинило деяку плутанину в процесі розписування викладок. Пізніше я відловив неточність і вирішив задля систематизації та ясності вказати означення, наведені вище.   
+\end{remark}
+
+Дискретна випадкова величина~$\eta$ має розподіл Пуасона з параметром~$\lambda$, якщо: 
+\begin{equation}\label{eq: dPoisson}
+    \eta \sim Poiss(\lambda) \ \Longleftrightarrow \ P(\eta=x) = \frac{\lambda^{x}e^{-\lambda}}{x!} 
+\end{equation}
+
+Кажуть, що дискретна випадкова величина~$\eta$ має від'ємний біноміальний розподіл з параметром кількості успіхів~$r$ та ймовірністю успіху~$p$, якщо: 
+\begin{equation}\label{eq: dNB}
+    \eta \sim NB(r,p) \ \Longleftrightarrow \ P(\eta=x) = \tbinom{x+r-1}{x}(1-p)^{x}p^{r}
+\end{equation}
+
+Наостанок, наведемо формулу повної ймовірності для деякої події~$A$ та повної групи подій~$\left\{ H_i : i = 1,2,3,\ldots \right\}$, визначеної та тому ж імовірнісному просторі, що і подія~$A:$
+\begin{equation}\label{eq: LTP} % https://en.wikipedia.org/wiki/Law_of_total_probability
+    P(A) = \sum\limits_{i}P(A \,|\, H_i) P(H_i)
+\end{equation}  
+
+Формула~\eqref{eq: LTP} застосовна і до пошуку ймовірності події~$A$ за умови деякої іншої події~$C:$
+\begin{align*}\label{eq: conditional LTP} % https://en.wikipedia.org/wiki/Law_of_total_probability
+    P(A \,|\, C) & = \frac{P(A,C)}{P(C)} = \\ 
+    & = \frac{\sum\limits_{i}P(A,H_i,C)}{P(C)} = \\
+    & = \frac{\sum\limits_{i}P(A \,|\, H_i,C) P(H_i \,|\, C) P(C)}{P(C)} = \\
+    & = \sum\limits_{i}P(A \,|\, H_i,C) P(H_i \,|\, C) \stepcounter{equation}\tag{\theequation}
+\end{align*}  
+
+\subsubsection*{Визначення MLE для параметра~$\widehat{\sigma}$}
+\addcontentsline{toc}{subsection}{Визначення MLE для параметра~$\widehat{\sigma}$}
+
+Визначимо оцінку максимальної правдоподібності параметра~$\widehat{\sigma}$ у Гамма-розподілі~\eqref{eq: theta}:
+\begin{equation}
+    \widehat{\sigma} = \argmax\limits_{\sigma}{L(X_{11},X_{12},\ldots,X_{1m};\ldots;X_{n1},X_{n2},\ldots,X_{nm} \,|\, \sigma)}
+\end{equation}
+
+З огляду на незалежність наборів $X_{i1},X_{i2},\ldots,X_{im}$, функція правдоподібності матиме вид:
+\begin{align}\label{eq: likelihood sigma}
+    L(X_{11},X_{12},\ldots,X_{1m};\ldots;X_{n1},X_{n2},\ldots,X_{nm} \,|\, \sigma) &\overset{\scalebox{0.5}{ind}}{=} \prod\limits_{i=1}^{n} f(X_{i1},X_{i2},\ldots,X_{im} \,|\, \sigma) = \notag \\
+    & \overset{\scalebox{0.5}{ind}}{=} \prod\limits_{i=1}^{n} \prod\limits_{j=1}^{m} f(X_{ij} \,|\, \sigma)
+\end{align}
+
+Використаємо формулу повної ймовірності~\eqref{eq: LTP} та формулу~\eqref{eq: conditional LTP} у застосуванні до повної групи подій, яка утворена неперервною випадковою величиною~$\theta_i$. Тоді розподіл~$f(X_{ij} \,|\, \sigma)$ у виразі~\eqref{eq: likelihood sigma} отримає вид:
+\begin{equation}\label{eq: theta density}
+    f(X_{ij} \,|\, \sigma) = \int\limits_{\mathbb{R}} f(X_{ij} \,|\, \theta_i,\sigma) f(\theta_i \,|\, \sigma)\, d\theta_i
+\end{equation}
+
+Враховуючи розподіл Пуасона для~$X_{ij}$~\eqref{eq: X | theta} та Гамма-розподілені величини~$\theta_i$~\eqref{eq: theta}, матимемо:
+\begin{align*}\label{eq: edited theta density}
+    f(X_{ij} \,|\, \sigma) & = \int\limits_{\mathbb{R}} f(X_{ij} \,|\, \theta_i,\sigma) f(\theta_i \,|\, \sigma)\, d\theta_i = \\
+    & = \int\limits_{\mathbb{R}} \frac{\theta_i^{X_{ij}}e^{-\theta_i}}{X_{ij}!} \cdot \frac{\theta_{i}^{k-1}}{\sigma^{k}\Gamma(k)}\, e^{-\theta_i/\sigma}\, \mathbbm{1}(\theta_i>0)\, d\theta_i = \\
+    & = C \, \sigma^{-k} \int\limits_{0}^{\infty} \theta_{i}^{X_{ij}+k-1}\, e^{-\theta_{i}\left( 1+\frac{1}{\sigma} \right)} \, d\theta_i \stepcounter{equation}\tag{\theequation}
+\end{align*}
+
+За означенням, Гамма-функція в деякій точці~$a$ при умові~$\mathrm{Re}(a)>0$ записується таким чином:
+\begin{equation}\label{eq: G(a+1)}
+    \Gamma(a) = \int\limits_{0}^{\infty}y^{a-1}\,e^{-y}\,dy
+\end{equation}
+
+Використаємо заміну~$y=bx$ й запишемо Гамма-функцію у точці~$a+1:$
+\begin{equation}
+    \Gamma(a+1) = \int\limits_{0}^{\infty}y^{a}\,e^{-y}\,dy = \int\limits_{0}^{\infty}(bx)^{a}\,e^{-bx}\,b\,dx = b^{a+1}\int\limits_{0}^{\infty}x^{a}\,e^{-bx}\,dx
+\end{equation}
+
+Як наслідок, матимемо:
+\begin{equation}\label{eq: edited G(a+1)}
+    \int\limits_{0}^{\infty}x^{a}\,e^{-bx}\,dx = b^{-a-1}\,\Gamma(a+1)
+\end{equation}
+
+Застосуємо~\eqref{eq: edited G(a+1)} до розподілу~\eqref{eq: edited theta density}, в результаті отримаємо:
+\begin{align*}\label{eq: final theta density}
+    f(X_{ij} \,|\, \sigma) & = C \, \sigma^{-k} \int\limits_{0}^{\infty} \theta_{i}^{X_{ij}+k-1}\, e^{-\theta_{i}\left( 1+\frac{1}{\sigma} \right)} \, d\theta_i = \\
+    & = C \, \sigma^{-k}\, \left( 1+\frac{1}{\sigma}\right)^{-X_{ij}-k}\Gamma(X_{ij}+k) = \\
+    & = C \, \sigma^{-k}\, \left( 1+\frac{1}{\sigma}\right)^{-X_{ij}-k} \stepcounter{equation}\tag{\theequation}
+\end{align*}
+
+Тоді функція правдоподібності~\eqref{eq: likelihood sigma} матиме такий остаточний вигляд:
+\begin{equation}
+    L = \prod\limits_{i=1}^{n} \prod\limits_{j=1}^{m} f(X_{ij} \,|\, \sigma) = \prod\limits_{i=1}^{n} \prod\limits_{j=1}^{m} C \, \sigma^{-k}\, \left( 1+\frac{1}{\sigma}\right)^{-X_{ij}-k} = C \, \sigma^{-nmk}\, \left( 1+\frac{1}{\sigma}\right)^{-nm\overline{X}-nmk},
+\end{equation}
+де позначено
+\begin{equation}
+    \overline{X} = \frac{1}{nm}\sum\limits_{i=1}^{n} \sum\limits_{j=1}^{m} X_{ij}
+\end{equation}
+
+Оскільки довільна диференційовна функція та логарифм від неї досягають екстремумів в однакових точках, то пошук розв'язку рівняння
+\begin{equation}
+    \frac{d}{d\sigma} \ln{L} = 0
+\end{equation}
+призведе до оцінки максимальної правдоподібності парамета~$\sigma:$
+\begin{align}
+    \frac{d}{d\sigma} \ln{L} & = \frac{d}{d\sigma} \left( \ln{C} - nmk\ln{\sigma} - (nm\overline{X}+nmk)\ln{\left( 1+\frac{1}{\sigma} \right)} \right) = \notag \\
+    & = -\frac{nmk}{\sigma} + \frac{nm\overline{X}+nmk}{1+\frac{1}{\sigma}}\,\sigma^{-2} = \notag \\
+    & = -\frac{nmk}{\sigma} + \frac{nm\overline{X}+nmk}{\sigma(\sigma+1)},
+\end{align}
+а відтак матимемо
+\begin{equation}\label{eq: sigma MLE}
+    \frac{d}{d\sigma} \ln{L} = 0 \ \Longleftrightarrow \ \widehat{\sigma} = \frac{\overline{X}}{k}
+\end{equation}
+
+\subsubsection*{Визначення баєсової оцінки параметра~$\theta_i$}
+\addcontentsline{toc}{subsection}{Визначення баєсової оцінки параметра~$\theta_i$}
+
+Відштовхуючись від~$h(\theta_i)$~--- апріорного Гамма-розподілу~\eqref{eq: theta} з параметрами~$k$ й~$\widehat{\sigma}$~--- та наявних даних $X_{i1},X_{i2},\ldots,X_{im}$~\eqref{eq: X | theta}, застосуємо формулу Баєса для пошуку апостеріорного розподілу параметра~$\theta_i:$
+\begin{equation}
+    h(\theta_i \,|\, X_{i1},X_{i2},\ldots,X_{im}) \propto h(\theta_i) L(X_{i1},X_{i2},\ldots,X_{im} \,|\, \theta_i)
+\end{equation}
+
+Отже, апріорний розподіл має вигляд:
+\begin{equation}
+    h(\theta_i) = \frac{\theta_{i}^{k-1}}{\widehat{\sigma}^{k}\Gamma(k)}\, e^{-\theta_{i}/\widehat{\sigma}}\, \mathbbm{1}(\theta_{i}>0)
+\end{equation}
+
+Функція правдоподібності, своєю чергою, розписуватиметься таким чином: 
+\begin{equation}
+    L(X_{i1},X_{i2},\ldots,X_{im} \,|\, \theta_i) \overset{\scalebox{0.5}{ind}}{=} \prod\limits_{j=1}^{m} P\left( X_{ij} \,|\, \theta_{i} \right) = \prod\limits_{j=1}^{m} \frac{\theta_{i}^{X_{ij}}e^{-\theta_{i}}}{X_{ij}!} = \frac{\theta_{i}^{\sum\limits_{j=1}^{m}X_{ij}}e^{-m\theta_{i}}}{X_{i1}!X_{i2}! \cdots X_{im}!}
+\end{equation}
+
+Отже, матимемо:
+\begin{equation}
+    L(X_{i1},X_{i2},\ldots,X_{im} \,|\, \theta_i) = C\, \theta_{i}^{m\overline{X}_i}\, e^{-m\theta_{i}}
+\end{equation}
+
+Відтак апостеріорний розподіл матиме вигляд:
+\begin{align}
+    h(\theta_i \,|\, X_{i1},X_{i2},\ldots,X_{im}) &\propto h(\theta_i) L(X_{i1},X_{i2},\ldots,X_{im} \,|\, \theta_i) = \notag \\
+    & = \theta_{i}^{k-1}\, e^{-\theta_{i}/\widehat{\sigma}}\, \theta_{i}^{m\overline{X}_i}\, e^{-m\theta_{i}}\, \mathbbm{1}(\theta_{i}>0) = \notag \\
+    & = \theta_{i}^{k+m\overline{X}_i-1}\, e^{-\theta_{i}(\widehat{\sigma}^{-1}+m)}\, \mathbbm{1}(\theta_{i}>0) \label{eq: theta posterior}
+\end{align}
+
+Окремо розпишемо множник експоненти:
+\begin{equation}
+    e^{-\theta_{i}(\widehat{\sigma}^{-1}+m)} = e^{-\theta_{i}\left( \frac{1}{\widehat{\sigma}}+m \right)} = e^{-\theta_{i}\left( \frac{1+\widehat{\sigma}m}{\widehat{\sigma}} \right)} = e^{-\theta_{i}/\left( \frac{\widehat{\sigma}}{1+\widehat{\sigma}m} \right)}
+\end{equation}
+
+Таким чином, впізнаємо у виразі~\eqref{eq: theta posterior} Гамма розподіл~\eqref{eq: dGamma scale parameter} із відповідними параметрами:
+\begin{equation}
+    \theta_i \,|\, X_{i1},X_{i2},\ldots,X_{im} \sim \mathrm{Gamma}\left( k+m\overline{X}_i,\frac{\widehat{\sigma}}{1+\widehat{\sigma}m} \right)
+\end{equation}
+
+А тоді відповідно до~\eqref{eq: dGamma scale parameter mean}, математичне сподівання апостеріорного розподілу (тобто баєсова оцінка параметра $\theta_{i}$) буде такою:
+\begin{equation}
+    \mathbb{E}(\theta_i \,|\, X_{i1},X_{i2},\ldots,X_{im}) = \left( k+m\overline{X}_i \right)\left( \frac{\widehat{\sigma}}{1+\widehat{\sigma}m} \right)
+\end{equation}
+
+Враховуючи оцінку максимальної правдоподібності~$\widehat{\sigma}=\overline{X}/k$~\eqref{eq: sigma MLE}, матимемо:
+\begin{equation}\label{eq: my BE}
+    \mathbb{E}(\theta_i \,|\, X_{i1},X_{i2},\ldots,X_{im}) = m\left( k/m+\overline{X}_i \right)\left( \frac{\overline{X}}{k+\overline{X}m} \right) = \left( k/m+\overline{X}_i \right)\left( \frac{\overline{X}}{k/m+\overline{X}} \right),
+\end{equation}
+де позначено
+\begin{equation}
+    \overline{X}_i = \frac{1}{m} \sum\limits_{j=1}^{m} X_{ij} \text{ та } \    \overline{X} = \frac{1}{nm}\sum\limits_{i=1}^{n} \sum\limits_{j=1}^{m} X_{ij}
+\end{equation}
+
+\begin{remark}
+    Під час виведення MLE~\eqref{eq: sigma MLE} для параметра~$\sigma$, інтеграл у формулі~\eqref{eq: edited theta density} був обчислений без використання інформації про від'ємно біноміально розподілені дані. Насправді, я досі не до кінця усвідомив, яким чином слід було б використати цей факт у зв'язці із параметром~$\sigma$ без заданих параметрів розподілу~$r$ та~$p$. Можливо, я недогледів певне перетворення між розподілами.
+\end{remark}

@@ -1,0 +1,101 @@
+\subsection*{Задача 2. MCMC algorithms}
+\addcontentsline{toc}{section}{Задача 2. MCMC algorithms}
+\setcounter{subsection}{2}
+\setcounter{equation}{0}
+
+\subsubsection*{Завдання (a): MCMC algorithm}
+\addcontentsline{toc}{subsection}{Завдання (a): MCMC algorithm}
+
+Нехай~$\lambda(\theta)$~--- деякий апостеріорний розподіл невідомого параметра~$\theta \in \mathbb{R}$. Алгоритм МСМС має на меті згенерувати такий ланцюг Маркова~$\left\{ \theta^{(t)} \right\}_{t \geqslant 0}$ на множині станів $\mathbb{R}$, для якого~$\lambda(\theta)$ є інваріантним розподілом. Нижче наведено один з варіантів МСМС, а саме~--- алгоритм Метрополіса-Гастінгса:
+\begin{enumerate}
+    \item Задати початкове значення~$\theta^{(0)} \in \mathbb{R}$ та розподіл пропозицій~$q(y\, |\, x):$
+    \begin{equation}
+        \forall t \geqslant 1 \text{ та } \forall x,y \in \mathbb{R}: q(y\, |\, x) = P\left( \theta^{(t)} = y\, |\, \theta^{(t-1)} = x \right)
+    \end{equation}    
+    \item Для $t=1,\ldots,M$ повторювати кроки:
+    \begin{enumerate}
+        \item Згенерувати кандидата $v \sim q(v\, |\, u)$, де $u = \theta^{(t-1)}$;
+        \item Обчислити імовірність прийняття~$\alpha(v\, |\, u)$ кандидата~$v:$
+        \begin{equation} 
+            \alpha(v\, |\, u) = \min\left\{ 
+                1,\, \frac{\lambda(v)\,q(u\, |\, v)}{\lambda(u)\,q(v\, |\, u)} 
+            \right\}
+        \end{equation}
+        \item З імовірністю~$\alpha(v\, |\, u)$ покласти~$\theta^{(t)} = v$, з імовірністю~$1-\alpha(v\, |\, u)$ покласти~$\theta^{(t)} = u$.
+    \end{enumerate}
+\end{enumerate}
+
+Завдання: показати, що~$\lambda(\theta)$~--- стаціонарний розподіл для ланцюга~$\left\{ \theta^{(t)} \right\}_{t \geqslant 0}$.
+
+\subsubsection*{Розв'язок}
+
+\begin{definition}\label{def: stationary distribution}
+    Розподіл~$\pi$ ланцюга Маркова з розподілом перехідних імовірностей~$Q(y\, |\, x)$ називають стаціонарним, якщо
+    \begin{equation}
+        \forall y \in \mathbb{R}: \pi(y) = \int\limits_{\mathbb{R}} Q(y\, |\, x)\,\pi(x)\,dx
+    \end{equation} 
+\end{definition}
+
+\begin{theorem}\label{theorem: detailed balance}
+    Якщо для деякого розподілу~$\pi$ ланцюга Маркова і деякого розподілу станів~$Q(y\, |\, x)$ виконується рівняння балансу
+    \begin{equation}
+        \forall x,y \in \mathbb{R}: \pi(x)\,Q(y\, |\, x) = \pi(y)\,Q(x\, |\, y),
+    \end{equation} 
+    то~$\pi$ є стаціонарним розподілом для~$Q(y\, |\, x)$.
+
+    \begin{proof}
+        Якщо $\forall x,y \in \mathbb{R}$ справедливо    
+        \begin{equation}
+            \pi(x)\,Q(y\, |\, x) = \pi(y)\,Q(x\, |\, y),
+        \end{equation} 
+        тоді проінтегрувавши обидві частини рівняння, матимемо
+        \begin{equation}
+           \int\limits_{\mathbb{R}}\pi(x)\,Q(y\, |\, x)\,dx = \int\limits_{\mathbb{R}}\pi(y)\,Q(x\, |\, y)\,dx,
+        \end{equation}
+        а отже, згідно властивостей розподілу станів отримуємо
+        \begin{equation}
+            \int\limits_{\mathbb{R}}\pi(x)\,Q(y\, |\, x)\,dx = \int\limits_{\mathbb{R}}\pi(y)\,Q(x\, |\, y)\,dx = \pi(y)
+        \end{equation}
+        Таким чином, в силу Озн.~\ref{def: stationary distribution} розподіл $\pi$ є стаціонарним.
+    \end{proof}
+\end{theorem}
+
+Алгоритм МСМС будує ланцюг Маркова з розподілом станів такого вигляду:
+\begin{equation}
+    \forall x,y \in \mathbb{R}: Q(y\, |\, x) = q(y\, |\, x)\,\alpha(y\, |\, x)
+\end{equation}
+
+Відтак, перевіримо справедливість рівняння балансу для апостеріорного розподілу~$\lambda(\theta)$, згенерованого за допомогою МСМС:
+\begin{align*}
+    \forall x,y \in \mathbb{R}: \lambda(x)\,Q(y\, |\, x) 
+        & = \lambda(x)\,q(y\, |\, x)\,\alpha(y\, |\, x) = \\
+        & = \lambda(x)\,q(y\, |\, x) \cdot \min\left\{ 
+            1,\, \frac{\lambda(y)\,q(x\, |\, y)}{\lambda(x)\,q(y\, |\, x)} 
+        \right\} = \\
+        & = \min\left\{ 
+            \lambda(x)\,q(y\, |\, x),\, \lambda(x)\,q(y\, |\, x)\,\frac{\lambda(y)\,q(x\, |\, y)}{\lambda(x)\, q(y\, |\, x)}
+        \right\} = \\
+        & = \min\left\{ 
+            \lambda(x)\,q(y\, |\, x),\, \lambda(y)\,q(x\, |\, y)
+        \right\} = \\
+        & = \lambda(y)\,q(x\, |\, y) \cdot \min\left\{ 
+            \frac{\lambda(x)\,q(y\, |\, x)}{\lambda(y)\,q(x\, |\, y)},\, 1
+        \right\} = \\
+        & = \lambda(y)\,q(x\, |\, y)\,\alpha(x\, |\, y) = \\
+        & = \lambda(y)\,Q(x\, |\, y) \stepcounter{equation}\tag{\theequation}
+\end{align*}
+
+Отже, за Теоремою~\ref{theorem: detailed balance} розподіл~$\lambda(\theta)$ є стаціонарним для ланцюга Маркова, згенерованого згідно з алгоритмом МСМС.
+
+\subsubsection*{Завдання (b): Gibbs Sampler}
+\addcontentsline{toc}{subsection}{Завдання (b): Gibbs Sampler}
+
+Нехай~$\lambda(\theta)$~--- апостеріорний розподіл вектора параметрів~$\theta=(\theta_1,\theta_2,\ldots,\theta_n)$. Вибірка Гіббса полягає у тому, щоб симулювати вибірку із заданого розподілу~$\lambda(\theta)$, генеруючи значення чергового параметра при фіксованих (ініціалізованих на першій ітерації) значеннях решти параметрів.
+
+Завдання: показати, що вибірка Гіббса є частковим випадком алгоритму Метрополіса-Гастінгса.
+
+\subsubsection*{Розв'язок}
+
+Алгоритм Метрополіса-Гастінгса генерує ланцюг Маркова, крок за кроком приймаючи стан-пропозицію, згенеровану із деякого розподілу пропозицій, з певною імовірністю $\alpha$ (яка обчислюється з огляду на заданий апостеріорний розподіл). При цьому, фактично, апостеріорний роподіл може включати й інші параметри, які в рамках МСМС покладені фіксованим значенням. 
+
+Вибірка Гіббса, своєю чергою, на кожному кроці завжди (тобто з імовірністю $\alpha=1$) приймає стан-пропозицію, згенеровану безпосередньо із апостеріорного розподілу. Іншими словами, вибірка Гіббса~--- частковий випадок алгоритму Метрополіса-Гастінгса з апостеріорним розподілом пропозицій та імовірністю прийняття пропозиції~$\alpha=1$. Формальний опис розв'язку наведено за \href{https://gregorygundersen.com/blog/2020/02/23/gibbs-sampling/}{\textit{посиланням}}.

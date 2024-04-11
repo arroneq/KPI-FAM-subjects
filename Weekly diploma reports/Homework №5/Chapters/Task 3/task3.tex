@@ -1,0 +1,220 @@
+\subsection*{Задача 3. Empirical Bayes for exponential families}
+\addcontentsline{toc}{section}{Задача 3. Empirical Bayes for exponential families}
+
+\setcounter{subsection}{3}
+\setcounter{equation}{0}
+
+\subsubsection*{Постановка задачі}
+\addcontentsline{toc}{subsection}{Постановка задачі}
+
+Нехай задано випадковий вектор~$\vv{X}=(X_1,\ldots,X_n)$, який коротко позначимо як~$X$, з~$s$-параметризованої експоненціальної сім'ї розподілів з вектором параметрів~$\vv{\theta}=(\theta_1,\ldots,\theta_s)$, у короткому записі~$\theta$. Тоді щільність розподілу вектора~$X$ матиме вигляд:
+\begin{equation}
+    p_{\theta}(x) \equiv p(X=x \,|\, \theta) = e^{A(\theta)T(x) - B(\theta)}h(x)
+\end{equation}
+
+Згідно з умовою задачі функція~$A(\theta)=\theta$. Іншими словами, вектор~$X$ належить експоненціальній сім'ї розподілів у так званій канонічній формі:
+\begin{equation}
+    p_{\theta}(x) = e^{\theta T(x) - B(\theta)}h(x)
+\end{equation}
+
+Розписуючи скалярний добуток векторів~$\theta$ та~$T(x)$, матимемо такий еквівалентний запис:
+\begin{equation}\label{eq: likelihood vec X | vec theta}
+    p_{\theta}(x) = e^{\sum\limits_{j=1}^{s}\theta_j T_j(x) - B(\theta)}h(x)
+\end{equation}
+
+Крім того, в рамках задачі вектор~$\theta$ є випадковим вектором з деякого (апріорного) розподілу~$\lambda_{\gamma}(\theta)$, який своєю чергою параметризований фіксованим значенням параметра~$\gamma$.
+
+Позначаючи апостеріорний розоділ вектора параметрів~$\theta$ як~$\lambda_{\gamma}(\theta \,|\, x)$, а безумовний розподіл випадкового вектора~$X$ як~$q_{\gamma}(x)$, у завданні слід показати, що для~$i=\overline{1,n}:$
+\begin{equation}\label{eq: E sum}
+    \mathbb{E}_{\gamma}\left[ \sum\limits_{j=1}^{s}\theta_j\frac{\partial T_j(x)}{\partial x_i} \,|\, X=x  \right] = \frac{\partial}{\partial x_i}\ln{q_{\gamma}(x)} - \frac{\partial}{\partial x_i}\ln{h(x)}
+\end{equation}
+
+А у випадку~$s=n$ та~$T(x)=x$, а також покладаючи значення параметра~$\gamma$ як оцінку максимальної правдоподібності
+\begin{equation}\label{eq: gamma MLE}
+    \widehat{\gamma} = \argmax\limits_{\gamma}L(X \,|\, \gamma) = \argmax\limits_{\gamma}q_{\gamma}(x),
+\end{equation}
+необхідно продемонструвати, що баєсова оцінка вектора~$\theta$ (тобто математичне сподівання апостеріорного розподілу) дорівнює, відповідно
+\begin{equation}\label{eq: E posterior}
+    \mathbb{E}_{\widehat{\gamma}}\left[ \theta \,|\, X=x \right] = \nabla_x \bigl( \ln{q_{\widehat{\gamma}}(x)} - \ln{h(x)} \bigr),
+\end{equation}
+де оператор набла визначений так:
+\begin{equation}\label{eq: def nabla}
+    \nabla_x = \left( \frac{\partial}{\partial x_1},\ldots,\frac{\partial}{\partial x_n} \right)
+\end{equation}
+
+\subsubsection*{Визначення математичного сподівання}
+\addcontentsline{toc}{subsection}{Визначення математичного сподівання}
+
+Розглянемо отримання математичного сподівання у виразі~\eqref{eq: E sum}. Наведемо задану баєсівську модель:
+\begin{align}
+    & (X_1,\ldots,X_n) \,|\, (\theta_1,\ldots,\theta_s) \sim p_{\theta}(x) \label{eq: vec X | vec theta} \\
+    & (\theta_1,\ldots,\theta_s) \sim \lambda_{\gamma}(\theta) \label{eq: vec s theta}
+\end{align} 
+
+Запишемо згідно із формулою Баєса вираз для визначення апостеріорного розподілу $\lambda_{\gamma}(\theta \,|\, x)$ вектора~$\theta$ при заданому апріорному розподілі~$\lambda_{\gamma}(\theta)$, безумовному розподілі даних~$q_{\gamma}(x)$ та функції правдоподібності~$p_{\theta}(x)$~\eqref{eq: likelihood vec X | vec theta}:
+\begin{equation}\label{eq: vec theta posterior}
+    \lambda_{\gamma}(\theta \,|\, x) = \frac{p_{\theta}(x)\lambda_{\gamma}(\theta)}{q_{\gamma}(x)} = 
+    \frac{h(x)}{q_{\gamma}(x)}\,\lambda_{\gamma}(\theta)\,e^{\sum\limits_{j=1}^{s}\theta_j T_j(x) - B(\theta)}
+\end{equation}
+
+Прологарифмуємо отриманий вираз:
+\begin{equation}\label{eq: vec theta ln posterior}
+    \ln{\lambda_{\gamma}(\theta \,|\, x)} = \ln{h(x)} - \ln{q_{\gamma}(x)} + \ln{\lambda_{\gamma}(\theta)} + \sum\limits_{j=1}^{s}\theta_j T_j(x) - B(\theta)
+\end{equation}
+
+Продиференціюємо~\eqref{eq: vec theta ln posterior} за координатою~$x_i$, враховуючи відсутню залежність від координати у функціях~$\lambda_{\gamma}(\theta)$ та~$B(\theta):$
+\begin{equation}\label{eq: vec theta d/dx posterior}
+    \frac{\partial}{\partial x_i}\ln{\lambda_{\gamma}(\theta \,|\, x)} = \frac{\partial}{\partial x_i}\ln{h(x)} - \frac{\partial}{\partial x_i}\ln{q_{\gamma}(x)} + \sum\limits_{j=1}^{s}\theta_j \frac{\partial T_j(x)}{\partial x_i}
+\end{equation}
+
+Таким чином, отримуємо співвідношення для шуканої суми:
+\begin{equation}\label{eq: vec theta d/dx posterior reshaped}
+    \sum\limits_{j=1}^{s}\theta_j \frac{\partial T_j(x)}{\partial x_i} = \frac{\partial}{\partial x_i}\ln{\lambda_{\gamma}(\theta \,|\, x)} + \frac{\partial}{\partial x_i}\ln{q_{\gamma}(x)} - \frac{\partial}{\partial x_i}\ln{h(x)}
+\end{equation}
+
+Обчислимо математичне сподівання виразу~\eqref{eq: vec theta d/dx posterior reshaped}, використовуючи властивість лінійності математичного сподівання та враховуючи відсутню залежність від вектора~$\theta$ у частини доданків: 
+\begin{equation}\label{eq: vec theta d/dx expectation posterior}
+    \mathbb{E}_{\gamma}\left[ \sum\limits_{j=1}^{s}\theta_j \frac{\partial T_j(x)}{\partial x_i} \,|\, X=x \right] = \mathbb{E}_{\gamma}\left[ \frac{\partial}{\partial x_i}\ln{\lambda_{\gamma}(\theta \,|\, x)} \,|\, X=x \right] + \frac{\partial}{\partial x_i}\ln{q_{\gamma}(x)} - \frac{\partial}{\partial x_i}\ln{h(x)}
+\end{equation}
+
+Детальніше розглянемо перший доданок у правій частині рівняння~\eqref{eq: vec theta d/dx expectation posterior}. За означенням умовного математичного сподівання для неперервної випадкової величини $g(\xi) \,|\, \eta:$
+\begin{equation}\label{eq: def conditional expectation}
+    \mathbb{E}\left[ g(\xi) \,|\, \eta \right] \overset{\scalebox{0.5}{def}}{=} \int\limits_{\mathbb{R}} g(y) \, f_{\xi \,|\, \eta}(y \,|\, \eta) \, dy
+\end{equation}
+
+Таким чином:
+\begin{equation}\label{eq: vec theta d/dx ln expectation posterior}
+    \mathbb{E}_{\gamma}\left[ \frac{\partial}{\partial x_i}\ln{\lambda_{\gamma}(\theta \,|\, x)} \,|\, X=x \right] = \int\limits_{\mathbb{R}^s} \frac{\partial}{\partial x_i}\ln{\lambda_{\gamma}(\theta \,|\, x)} \, \lambda_{\gamma}(\theta \,|\, x) \, d\theta
+\end{equation}
+
+У викладках нижче послідовно продиференціюємо функцію логарифма (1), скористаємося інтегральним правилом Лейбніца для винесення оператора диференціювання за межі знаку інтегрування (2) та використаємо властивість, що інтеграл довільної щільності розподілу на всій області визначення дорівнює одиниці (3): 
+\begin{align*}\label{eq: Leibniz rule}
+    \mathbb{E}_{\gamma}\left[ \frac{\partial}{\partial x_i}\ln{\lambda_{\gamma}(\theta \,|\, x)} \,|\, X=x \right] & = \int\limits_{\mathbb{R}^s} \frac{\partial}{\partial x_i}\ln{\lambda_{\gamma}(\theta \,|\, x)} \, \lambda_{\gamma}(\theta \,|\, x) \, d\theta = \\
+    & \overset{\scalebox{0.5}{(1)}}{=} \int\limits_{\mathbb{R}^s} \frac{\frac{\partial}{\partial x_i}\lambda_{\gamma}(\theta \,|\, x)}{\lambda_{\gamma}(\theta \,|\, x)} \, \lambda_{\gamma}(\theta \,|\, x) \, d\theta = \\
+    & = \int\limits_{\mathbb{R}^s} \frac{\partial}{\partial x_i}\lambda_{\gamma}(\theta \,|\, x) \, d\theta = \\
+    & \overset{\scalebox{0.5}{(2)}}{=} \frac{\partial}{\partial x_i} \int\limits_{\mathbb{R}^s} \lambda_{\gamma}(\theta \,|\, x) \, d\theta = \\
+    & \overset{\scalebox{0.5}{(3)}}{=} 0 \stepcounter{equation}\tag{\theequation}
+\end{align*}
+
+Отже, математичне сподівання~\eqref{eq: vec theta d/dx expectation posterior} отримає шуканий вигляд:
+\begin{equation}\label{eq: vec theta d/dx final expectation posterior}
+    \mathbb{E}_{\gamma}\left[ \sum\limits_{j=1}^{s}\theta_j \frac{\partial T_j(x)}{\partial x_i} \,|\, X=x \right] = \frac{\partial}{\partial x_i}\ln{q_{\gamma}(x)} - \frac{\partial}{\partial x_i}\ln{h(x)}
+\end{equation}
+
+\subsubsection*{Визначення баєсової оцінки вектора $\theta$}
+\addcontentsline{toc}{subsection}{Визначення баєсової оцінки вектора $\theta$}
+
+Нехай тепер задано баєсівську модель
+\begin{align}
+    & (X_1,\ldots,X_n) \,|\, (\theta_1,\ldots,\theta_s) \sim p_{\theta}(x) \label{eq: duplicated vec X | vec theta} \\
+    & (\theta_1,\ldots,\theta_n) \sim \lambda_{\widehat{\gamma}}(\theta) \label{eq: vec n theta}
+\end{align} 
+над $n$-параметризованою експоненціальною сім'єю розподілів 
+\begin{equation}\label{eq: n likelihood vec X | vec theta}
+    p_{\theta}(x) = e^{\theta T(x) - B(\theta)}h(x)
+\end{equation}
+при фіксованому значенні параметра~$\widehat{\gamma}$ як оцінки максимальної правдоподібності~\eqref{eq: gamma MLE}. Крім того, у розподілі~\eqref{eq: n likelihood vec X | vec theta} покладено~$T(x)=x$, що буде використано у викладках нижче.
+
+Процедура пошуку математичного сподівання~\eqref{eq: vec theta d/dx final expectation posterior} у попередньому підрозділі вказує шлях пошуку баєсової оцінки вектора~$\theta$. Тож першим кроком аналогічним чином запишемо згідно із формулою Баєса вираз для визначення апостеріорного розподілу $\lambda_{\widehat{\gamma}}(\theta \,|\, x)$ вектора~$\theta$ при заданому апріорному розподілі~$\lambda_{\widehat{\gamma}}(\theta)$, безумовному розподілі даних~$q_{\widehat{\gamma}}(x)$ та функції правдоподібності~$p_{\theta}(x)$~\eqref{eq: n likelihood vec X | vec theta}:
+\begin{equation}\label{eq: n vec theta posterior}
+    \lambda_{\widehat{\gamma}}(\theta \,|\, x) = \frac{p_{\theta}(x)\lambda_{\widehat{\gamma}}(\theta)}{q_{\widehat{\gamma}}(x)} = 
+    \frac{h(x)}{q_{\widehat{\gamma}}(x)}\,\lambda_{\widehat{\gamma}}(\theta)\,e^{\theta T(x) - B(\theta)},
+\end{equation}
+де~$\theta \cdot T(x)$ є нічим іншим як скалярним добутком двох векторів. Прологарифмуємо отриманий вираз:
+\begin{equation}\label{eq: n vec theta ln posterior}
+    \ln{\lambda_{\widehat{\gamma}}(\theta \,|\, x)} = \ln{h(x)} - \ln{q_{\widehat{\gamma}}(x)} + \ln{\lambda_{\widehat{\gamma}}(\theta)} + \theta T(x) - B(\theta)
+\end{equation}
+
+Оскільки розмірність вектора~$\theta$ збігається із розмірністю вектора~$X$, застосуємо до~\eqref{eq: n vec theta ln posterior} оператор набла~$\nabla_x$~\eqref{eq: def nabla}:
+\begin{equation}\label{eq: vec theta nabla posterior}
+    \nabla_x\ln{\lambda_{\widehat{\gamma}}(\theta \,|\, x)} = \nabla_x\ln{h(x)} - \nabla_x\ln{q_{\widehat{\gamma}}(x)} +  \nabla_x\ln{\lambda_{\widehat{\gamma}}(\theta)} + \nabla_x\bigl( \theta T(x) \bigr),
+\end{equation}
+де на відміну від попереднього підрозділу у рівності~\eqref{eq: vec theta d/dx posterior} доданок з апріорним розподілом~$\nabla_x\ln{\lambda_{\widehat{\gamma}}(\theta)}$ не дорівнює нулю, адже значення гіперапараметра~$\widehat{\gamma}$ як оцінки максимальної правдоподідності~\eqref{eq: gamma MLE} містить функціональну залежність від даних~$x$.
+
+Наступні кроки спрямуємо на визначення дії оператора набла на скалярний добуток двох векторів:
+\begin{equation}
+    \nabla_x\bigl( \theta T(x) \bigr) = \nabla_x(\theta) T(x) + \theta\,\nabla_x\bigl( T(x) \bigr) = \theta\,\nabla_x\bigl( T(x) \bigr),
+\end{equation}
+а оскільки в рамках завдання покладено~$T(x)=x$, то як наслідок
+\begin{equation}
+    \nabla_x\bigl( \theta T(x) \bigr) = \theta
+\end{equation}
+
+На додачу до властивості адитивності диференціального оператора набла, в результаті вираз~\eqref{eq: vec theta nabla posterior} отримує вид:
+\begin{equation}
+    \theta = \nabla_x\ln{\lambda_{\widehat{\gamma}}(\theta \,|\, x)} - \nabla_x\ln{\lambda_{\widehat{\gamma}}(\theta)} + \nabla_x\bigl( \ln{q_{\widehat{\gamma}}(x)} - \ln{h(x)} \bigr)
+\end{equation}
+
+Аналогічно до~\eqref{eq: vec theta d/dx expectation posterior} обчислимо умовне математичне сподівання: 
+\begin{multline}\label{eq: theta Bayes estimation}
+    \mathbb{E}_{\widehat{\gamma}} \left[ \theta \,|\, X=x \right] = \mathbb{E}_{\widehat{\gamma}} \left[ \nabla_x\ln{\lambda_{\widehat{\gamma}}(\theta \,|\, x)} \,|\, X=x \right] - \mathbb{E}_{\widehat{\gamma}} \left[ \nabla_x\ln{\lambda_{\widehat{\gamma}}(\theta)} \,|\, X=x \right] + \\
+    + \nabla_x\bigl( \ln{q_{\widehat{\gamma}}(x)} - \ln{h(x)} \bigr)
+\end{multline}
+
+Згідно з означенням~\eqref{eq: def conditional expectation} та відповідно до викладок~\eqref{eq: Leibniz rule}:
+\begin{align*}\label{eq: duplicated Leibniz rule}
+    \mathbb{E}_{\widehat{\gamma}} \left[ \nabla_x\ln{\lambda_{\widehat{\gamma}}(\theta \,|\, x)} \,|\, X=x \right] & = \int\limits_{\mathbb{R}^n} \nabla_x\ln{\lambda_{\widehat{\gamma}}(\theta \,|\, x)} \, \lambda_{\widehat{\gamma}}(\theta \,|\, x) \, d\theta = \\
+    & = \int\limits_{\mathbb{R}^n} \frac{\nabla_x\lambda_{\widehat{\gamma}}(\theta \,|\, x)}{\lambda_{\widehat{\gamma}}(\theta \,|\, x)} \, \lambda_{\widehat{\gamma}}(\theta \,|\, x) \, d\theta = \\
+    & = \int\limits_{\mathbb{R}^n} \nabla_x\lambda_{\widehat{\gamma}}(\theta \,|\, x) \, d\theta = \\
+    & = \nabla_x \int\limits_{\mathbb{R}^n} \lambda_{\widehat{\gamma}}(\theta \,|\, x) \, d\theta = \\
+    & = 0 \stepcounter{equation}\tag{\theequation}
+\end{align*}
+
+Розпишемо другий доданок математичного сподівання~\eqref{eq: theta Bayes estimation}:
+\begin{equation}
+    \mathbb{E}_{\widehat{\gamma}} \left[ \nabla_x\ln{\lambda_{\widehat{\gamma}}(\theta)} \,|\, X=x \right] = \int\limits_{\mathbb{R}^n} \nabla_x\ln{\lambda_{\widehat{\gamma}}(\theta)} \, \lambda_{\widehat{\gamma}}(\theta \,|\, x) \, d\theta = \int\limits_{\mathbb{R}^n} \frac{\nabla_x\lambda_{\widehat{\gamma}}(\theta)}{\lambda_{\widehat{\gamma}}(\theta)} \, \lambda_{\widehat{\gamma}}(\theta \,|\, x) \, d\theta
+\end{equation}
+
+За правилом диференціювання складеної функції:
+\begin{equation}\label{eq: chain rule}
+    \nabla_x\lambda_{\widehat{\gamma}}(\theta) = \frac{\partial \lambda_{\widehat{\gamma}}(\theta)}{\partial x} = \frac{\partial \lambda_{\widehat{\gamma}}(\theta)}{\partial \gamma} \cdot \frac{\partial \gamma}{\partial x}
+\end{equation}
+
+Відтак, враховуючи інтегральне правило Лейбніца, матимемо такий еквівалентний запис:
+\begin{equation}\label{eq: prior expectation}
+    \mathbb{E}_{\widehat{\gamma}} \left[ \nabla_x\ln{\lambda_{\widehat{\gamma}}(\theta)} \,|\, X=x \right] = \frac{\partial \gamma}{\partial x} \int\limits_{\mathbb{R}^n} \frac{\partial \lambda_{\widehat{\gamma}}(\theta)}{\partial \gamma} \cdot \frac{\lambda_{\widehat{\gamma}}(\theta \,|\, x)}{\lambda_{\widehat{\gamma}}(\theta)} \, d\theta
+\end{equation}
+
+З іншого боку, гіперапарметр~$\widehat{\gamma}$ є оцінкою максимальної правдоподібності~\eqref{eq: gamma MLE} безумовного розподілу даних~$q_{\gamma}(x)$, а отже, похідна від функції~$q_{\widehat{\gamma}}(x)$ в точці~$\widehat{\gamma}$ дорівнює нулю:
+\begin{equation}\label{eq: gamma zero MLE}
+    \widehat{\gamma} = \argmax\limits_{\gamma}q_{\gamma}(x) \ \Longleftrightarrow \ \frac{\partial}{\partial \gamma} q_{\widehat{\gamma}}(x) = 0
+\end{equation}
+
+За формулою повної ймовірності~\eqref{eq: LTP} у застосуванні до повної групи подій, яка утворена вектором~$\theta$ з неперервних випадкових величин:
+\begin{equation}
+    q_{\widehat{\gamma}}(x) = \int\limits_{\mathbb{R}^n} p_{\theta}(x) \, \lambda_{\widehat{\gamma}}(\theta) \, d\theta
+\end{equation}
+
+Як наслідок, матимемо:
+\begin{align*}\label{eq: q(x) derivative}
+    \frac{\partial}{\partial \gamma}\, q_{\widehat{\gamma}}(x) & = \frac{\partial}{\partial \gamma} \int\limits_{\mathbb{R}^n} p_{\theta}(x) \, \lambda_{\widehat{\gamma}}(\theta) \, d\theta = \\
+    & = \int\limits_{\mathbb{R}^n} \frac{\partial}{\partial \gamma} \Bigl( p_{\theta}(x) \cdot \lambda_{\widehat{\gamma}}(\theta) \Bigr) \, d\theta = \\
+    & = \int\limits_{\mathbb{R}^n} \frac{\partial p_{\theta}(x)}{\partial \gamma}\,\lambda_{\widehat{\gamma}}(\theta) \, d\theta + \int\limits_{\mathbb{R}^n} p_{\theta}(x)\,\frac{\partial \lambda_{\widehat{\gamma}}(\theta)}{\partial \gamma} \, d\theta = \\
+    & = \int\limits_{\mathbb{R}^n} p_{\theta}(x)\,\frac{\partial \lambda_{\widehat{\gamma}}(\theta)}{\partial \gamma} \, d\theta \stepcounter{equation}\tag{\theequation}
+\end{align*}
+
+Наостанок, за формулою Баєса~\eqref{eq: n vec theta posterior}:
+\begin{equation}\label{eq: Bayes rule}
+    \lambda_{\widehat{\gamma}}(\theta \,|\, x) = \frac{p_{\theta}(x)\lambda_{\widehat{\gamma}}(\theta)}{q_{\widehat{\gamma}}(x)} \ \Longleftrightarrow \ p_{\theta}(x) = \frac{\lambda_{\widehat{\gamma}}(\theta \,|\, x)}{\lambda_{\widehat{\gamma}}(\theta)}\,q_{\widehat{\gamma}}(x)
+\end{equation}
+
+Тоді в силу~\eqref{eq: gamma zero MLE} вираз~\eqref{eq: q(x) derivative} отримає вид:
+\begin{equation}
+    \frac{\partial}{\partial \gamma}\, q_{\widehat{\gamma}}(x) = 0 
+    \ \Longleftrightarrow \ 
+    q_{\widehat{\gamma}}(x) \int\limits_{\mathbb{R}^n} \frac{\lambda_{\widehat{\gamma}}(\theta \,|\, x)}{\lambda_{\widehat{\gamma}}(\theta)} \cdot \frac{\partial \lambda_{\widehat{\gamma}}(\theta)}{\partial \gamma} \, d\theta = 0
+\end{equation}
+
+Відповідно, шукане математичне сподівання~\eqref{eq: prior expectation} буде дорівнювати нулю:
+\begin{equation}
+    \mathbb{E}_{\widehat{\gamma}} \left[ \nabla_x\ln{\lambda_{\widehat{\gamma}}(\theta)} \,|\, X=x \right] = 0
+\end{equation}
+
+Отже, остаточний вигляд баєсової оцінки вектора~$\theta$~\eqref{eq: theta Bayes estimation} записуватиметься таким формульним співвідношенням: 
+\begin{equation}
+    \mathbb{E}_{\widehat{\gamma}} \left[ \theta \,|\, X=x \right] = \nabla_x\bigl( \ln{q_{\widehat{\gamma}}(x)} - \ln{h(x)} \bigr)
+\end{equation}
+
+\begin{remark}
+    У підсумку можна зауважити, що на вигляд баєсової оцінки для експоненціальної сім'ї розподілів у канонічній формі впливають лише няавні дані та емпірична оцінка значення гіперпараметра апріорного розподілу (а не його безпосередній вигляд).
+\end{remark}

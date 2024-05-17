@@ -1,0 +1,5 @@
+linters: linters_with_defaults(
+    line_length_linter = line_length_linter(120L), 
+    indentation_linter = indentation_linter(indent = 4L, hanging_indent_style = "never"),
+    commented_code_linter = NULL
+  ) # use ??lintr or read more about lintr formatting https://github.com/r-lib/lintr/issues/886 and using lintr https://lintr.r-lib.org/articles/lintr.html#configuring-linters 

@@ -1,0 +1,53 @@
+% !TeX program = lualatex
+% !TeX encoding = utf8
+% !BIB program = biber
+% !TeX spellcheck = uk_UA
+
+\documentclass{mathreport}
+\input{packages}
+
+\ReportPreamble{Проміжний звіт до магістерської дисертації}
+\ReportName{Математичне та програмне забезпечення системи аналізу та прогнозування макроекономічних даних України на основі емпіричних беєсівських методів}
+\ReportSubject{}
+
+\AuthorInfo{Студент групи КМ-31мн,}
+\AuthorName{Цибульник Антон Владиславович}
+
+\SupervisorInfo{Доцент кафедри ПМА,}
+\SupervisorName{Тавров Данило Юрійович}
+
+% warning: in order to fit the text in the very right side of a page, set the longest label
+\TheLongestLabel{Цибульник Антон Владиславович}
+
+\begin{document}
+
+\import{Title/}{title}
+
+\tableofcontents
+
+\newpage
+\import{Chapters/Chapter 1}{chapter 1}
+
+\newpage
+\import{Chapters/Chapter 2}{chapter 2}
+
+\newpage
+\import{Chapters/Chapter 3}{chapter 3}
+
+\newpage
+\import{Chapters/Chapter 4}{chapter 4}
+
+\newpage
+\import{Chapters/Chapter 5}{chapter 5}
+
+\newpage
+\import{Chapters/Chapter 6}{chapter 6}
+
+\newpage
+\import{Chapters/Conclusions}{conclusions}
+
+\newpage
+\printbibliography[title={Перелік посилань}] % \nocite{*}
+\addcontentsline{toc}{section}{Перелік посилань}
+
+\end{document}

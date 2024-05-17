@@ -1,0 +1,23 @@
+% ------------------------------------------------------------------------------------------------------------
+% Add Additional Packages
+% ------------------------------------------------------------------------------------------------------------
+
+\renewcommand{\theequation}{\arabic{equation}}
+% \renewcommand{\thesubsection}{\arabic{section}.\arabic{subsection}}
+
+% reset equation numbering after each subsection
+\counterwithin*{equation}{subsection}
+
+% Longtblr settings
+\DefTblrTemplate{contfoot-text}{default}{\itshape\footnotesize Продовження на наступній сторінці}
+\DefTblrTemplate{conthead-text}{default}{(продовження)}
+
+\usepackage{bbm} % for using indicator \mathbbm{1}
+\usepackage{esvect} % for fancy vector symbol
+
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\argmax}{argmax}
+
+% set page background color (dark read mode)
+% \pagecolor[rgb]{0.118,0.118,0.118}
+% \color[rgb]{0.8,0.8,0.8}

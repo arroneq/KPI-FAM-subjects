@@ -21,12 +21,20 @@
 /English/*
 !/English/*/
 
-/Weekly diploma reports/*/*
-!/Weekly diploma reports/*/*/
+/Weekly diploma reports/Homework №1/*
+!/Weekly diploma reports/Homework №1/*/
+
+/Weekly diploma reports/SBR report/*
+!/Weekly diploma reports/SBR report/*/
+
+/Weekly diploma reports/Homework №2/*/*
+!/Weekly diploma reports/Homework №2/*/*/
 
 !*.ipynb
 !*.joblib
 !*.py
+!*.R
+!*.lintr
 !*.txt
 !*.png
 

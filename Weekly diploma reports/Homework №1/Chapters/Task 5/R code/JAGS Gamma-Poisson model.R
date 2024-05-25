@@ -1,9 +1,19 @@
 # install.packages("ggmcmc")
+
 library("ggplot2")
+# https://intro2r.com/tips.html#moving-the-legend
+# https://r-charts.com/ggplot2/legend/
+# https://afit-r.github.io/histograms
+# https://ggplot2.tidyverse.org/articles/extending-ggplot2.html
+
 library("patchwork")
 library("ggmcmc")
+# https://cran.r-project.org/web/packages/ggmcmc/vignettes/using_ggmcmc.html
+# ttps://yutannihilation.github.io/allYourFigureAreBelongToUs/ggmcmc/
+
 library("coda")
 library("rjags")
+# https://onlinelibrary.wiley.com/doi/pdf/10.1002/9781119942412.app1
 
 # Current working directory of R
 getwd()
@@ -25,7 +35,7 @@ x1 <- data$V1
 x2 <- data$V2
 x3 <- data$V3
 
-# Create clear dataset
+# Recreate the dataset
 x <- cbind(x1, x2, x3)
 
 # ------------------------------------------------------------------------
@@ -39,11 +49,8 @@ m <- nrow(x)
 prior <- list()
 prior$k <- 3
 
-init <- list()
-init$sigma <- 1.0
-
 jags_model_string <- "model {
-    for (i in 1:n * m) {
+    for (i in 1:(n*m)) {
         x[i] ~ dpois(theta[group[i]])
     }
 
@@ -93,6 +100,12 @@ model_simulation <- coda.samples(
     n.iter = 10e3
 )
 
+# ------------------------------------------------------------------------
+# CONVERGENCE DIAGNOSTICS: R-BASE TOOLS
+# ------------------------------------------------------------------------
+
+summary(as.mcmc(model_simulation[1]))
+
 gelman.diag(model_simulation)
 # gelman.plot(model_simulation)
 autocorr.diag(model_simulation)
@@ -101,12 +114,6 @@ effectiveSize(model_simulation[1])
 
 # Compute DIC
 dic <- dic.samples(model, n.iter = 1e3)
-
-summary(as.mcmc(model_simulation[1]))
-
-# ------------------------------------------------------------------------
-# RESULTS OVERVIEW
-# ------------------------------------------------------------------------
 
 # LaTeX project has another folder, so set full path and download image [R-base plot]
 png(
@@ -120,6 +127,10 @@ png(
 
 plot(model_simulation[1][, c(1, 2)])
 dev.off()
+
+# ------------------------------------------------------------------------
+# CONVERGENCE DIAGNOSTICS: GGMCMC TOOLS
+# ------------------------------------------------------------------------
 
 # In order to display greek letters in a ggplot() correctly
 for (chain in 1:3) {
@@ -177,13 +188,15 @@ ggsave(
     dpi = 1000,
 )
 
-# Calculate Bayesian estimations
+# ------------------------------------------------------------------------
+# BAYESIAN ESTIMATIONS
+# ------------------------------------------------------------------------
 
 theta_mean_estimation <- mean(as.mcmc(model_simulation[1][, 2]))
-print(paste("Bayesian mean estimation:", theta_mean_estimation))
+print(paste("Bayesian empirical mean estimation:", theta_mean_estimation))
 
 x1_mean <- mean(x1)
 x_mean <- (sum(x1) + sum(x2) + sum(x3)) / (n * m)
 
 theta_star_estimation <- (prior$k / m + x1_mean) * (x_mean / (prior$k / m + x_mean))
-print(paste("Theta star estimation:", theta_star_estimation))
+print(paste("Point estimation:", theta_star_estimation))

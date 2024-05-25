@@ -24,6 +24,8 @@
 /Weekly diploma reports/Homework №2/*/*
 !/Weekly diploma reports/Homework №2/*/*/
 
+/Fuzzy Systems
+
 !*.ipynb
 !*.joblib
 !*.py

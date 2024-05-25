@@ -127,7 +127,12 @@
 \RequirePackage{float}
 \graphicspath{{Images/}} % path to images
 
-\RequirePackage[bibstyle=gost-numeric,sorting=none]{biblatex} % bibliography settings
+\RequirePackage[
+    bibstyle=gost-numeric,
+    sorting=none,
+    maxbibnames=99
+]{biblatex} % bibliography settings
+
 \addbibresource{citations.bib}
 \RequirePackage[autostyle=false]{csquotes}
 

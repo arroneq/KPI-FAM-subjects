@@ -304,7 +304,7 @@ posterior <- tail(posterior, -100)
             hlines={1pt,solid}, 
             vlines={1pt,solid},
             % hline{4-6}={1-5}{0pt},
-            colspec={Q[3cm,c]Q[3cm,c]Q[3cm,c]Q[3cm,c]},
+            colspec={X[c]X[c]X[c]X[c]X[c]X[c]},
             % cell{1}{1}={r=2,c=1}{c},
             % cell{1}{2}={r=1,c=2}{c},
             % cell{1}{4}={r=1,c=2}{c},
@@ -312,34 +312,40 @@ posterior <- tail(posterior, -100)
             row{2-3}={mode=math},
         }
 
-        Parameter & Empirical mean & Standard deviation & Standard error \\
-        \sigma    & 0.5768         & 0.2054             & 0.002054       \\
-        \theta_1  & 1.3640         & 0.1139             & 0.001139       \\
+        Parameter & Empirical mean & Standard deviation & Standard error & $2.5\%$ - quantile & $97.5\%$ - quantile \\
+        \sigma    & 0.5768 & 0.2054 & 0.002054 & 0.3002 & 1.0800 \\
+        \theta_1  & 1.3640 & 0.1139 & 0.001139 & 1.1478 & 1.5930 \\
 
     \end{tblr}
     \caption{Результати імплементації вибірки Гіббса засобами \texttt{R-base}}
     \label{table: R-base Gibbs Sampler results}
 \end{table}
 
-У припущенні, що апостеріорний розподіл параметра~$\theta_1$ має нормальний розподіл~$\mathrm{N}(\mu,\sigma^2)$ (Рис.~\ref{pic: Gibbs Sampler traceplot}), довірчий інтервал рівня довіри~$\gamma=0.95$ для математичного сподівання~$\mu$ матиме вигляд:
-\begin{equation}\label{eq: CI for theta mean}
-    P\left( \overline{\theta_1} - q_{\frac{1+\gamma}{2}}\frac{\sigma}{\sqrt{N}} < \mu < \overline{\theta_1} + q_{\frac{1+\gamma}{2}}\frac{\sigma}{\sqrt{N}} \right) = \gamma,
-\end{equation}
-де вибіркове середнє~$\overline{\theta_1}$ та стандартне відхилення~$\sigma$ є відомими~(Табл.~\ref{table: R-base Gibbs Sampler results}), $N$ є довжиною ланцюга Маркова, а значення~$q_{\frac{1+\gamma}{2}}$ є квантилем рівня~$\frac{1+\gamma}{2}$ стандартного нормального розподілу. Таким чином, отримаємо такий результат:
-\begin{equation}\label{eq: value of CI for theta mean}
-    P(1.3640 - 1.96 \cdot 0.001139 < \mu < 1.3640 + 1.96 \cdot 0.001139) = 0.95,
-\end{equation}
-що у коротшому записі матиме вид
-\begin{equation}\label{eq: R-base short expression of CI for theta mean}
-    \mu = 1.3640 \pm 0.0022
+У задачах статистичного аналізу для оцінки невідомого параметра імовірнісної моделі використовують не лише точкові, але й інтервальні оцінки. При цьому, у так званому частотному підході такою оцінкою слугує довірчий інтервал (confidence interval), а у Баєсівському підході~--- імовірний інтервал (credible interval). У декількох наступних абзацах коротко наведемо відмінності між цими поняттями.
+
+Нехай задано вибірку~$X_1,\ldots,X_n$ з деякого розподілу $f(x;\mu)$, де невідомим параметром слугує~$\mu$. У частотному підході значення~$\mu$ вважається невідомим та фіксованим. У ролі точкової оцінки може бути використана довільна статистика (скажімо, вибіркове середнє), і окремим питанням стоятиме визначення властивостей такої оцінки (змістовність, незміщеність тощо). Водночас, судження щодо значень параметра~$\mu$ можна зробити на основі довірчого інтервалу зі статистик~$T_1(\vv{X})$ та~$T_2(\vv{X}):$ 
+\begin{equation}\label{eq: confidence interval}
+    P(T_1(\vv{X}) < \mu < T_2(\vv{X})) \geq \gamma
 \end{equation}
 
-Згідно вимог завдання, порівняємо наведене значення зі значенням оцінки~\eqref{eq: my BE}, отриманої в рамках Завдання 4:
+Інтервал~\eqref{eq: confidence interval} називають довірчим інтервалом рівня довіри~$\gamma$. Отриманий інтервал є випадковим проміжком, який слід трактувати так: серед (нескінченних) спроб побудувати довірчий інтервал~$\bigl( T_1(\vv{x}),T_2(\vv{x}) \bigr)$ для щоразу іншої реалізації вибірки~$\vv{x}$, щонайменше $\gamma\%$ з побудованих інтервалів міститимуть істинне значення невідомого параметра~$\gamma$. Тобто для конкретного наявного набору даних~$\vv{x}$ побудований інтервал або містить, або не містить істинний параметр. Іншими словами, значення~$\gamma$ має не імовірнісну інтерпретацію наявності/відсутності істинного значення параметра у побудованому довірчому інтервалі, а радше <<рівнем впевненості>> безпосередньо у статистичній процедурі побудови інтервалу.
+
+На противагу частотному підходу, Баєсівська модель вважає параметр~$\mu$ невідомою випадковою величиною. Відтак, шляхом переоцінки деякого апріорного розподілу~$\mu \sim g(x)$ із залученням конкретного набору даних~$\vv{x}$, судження про значення параметра виконують з отриманого переоціненого апостеріорного розподілу~$g^{*}(x)$. Подальшим кроком може бути побудова точкої оцінки чи визначення імовірного інтервалу
+\begin{equation}\label{eq: credible interval}
+    P(q_1 < \mu < q_2) \overset{\scalebox{0.5}{def}}{=} \int\limits_{q_1}^{q_2} g^{*}(x)\, dx,
+\end{equation}
+який означатиме, власне, імовірність параметра~$\mu$ належати проміжку~$(q_1,q_2)$ при наявних даних~$\vv{x}$. 
+
+Отже, повертаючись до Баєсової моделі~\eqref{task 5 - eq: Bayes model Xij} -- \eqref{task 5 - eq: Bayes model sigma}, з огляду на результати побудованих апостеріорних розподілів (Табл.~\ref{table: R-base Gibbs Sampler results}), $95\%$-імовірний інтервал для значень параметра~$\theta_1$ матиме вигляд:
+\begin{equation}\label{eq: theta1 R-base credible interval}
+    P(1.1478 < \theta_1 < 1.5930) = 0.95
+\end{equation}
+
+Крім того, згідно вимог завдання порівняємо наведене значення зі значенням оцінки~\eqref{eq: my BE}, отриманої в рамках Завдання 4:
 \begin{equation}\label{eq: R-base theta star estimation}
     \widehat{\theta}_1 = \left( k/m+\overline{X}_1 \right)\left( \frac{\overline{X}}{k/m+\overline{X}} \right) = 1.3608
 \end{equation}
 
-\newpage
 \subsubsection*{Завдання (c): \texttt{R-jags} Gibbs Sampler}
 \addcontentsline{toc}{subsection}{Завдання (c): \texttt{R-jags} Gibbs Sampler}
 
@@ -357,7 +363,7 @@ posterior <- tail(posterior, -100)
     & \sigma^{-1} \sim \mathrm{Exp}(1)
 \end{align}
 
-У такому разі, запис моделі через синтаксис \texttt{rjags} наведено на Лістингу~\ref{code: jags gibbs sampler}, а безпосередній запуск алгоритму вказано у Лістингу~\ref{code: run jags gibbs sampler}.
+Відтак, запис моделі через синтаксис \texttt{rjags} наведено на Лістингу~\ref{code: jags gibbs sampler}, а безпосередній запуск алгоритму вказано у Лістингу~\ref{code: run jags gibbs sampler}.
 
 \vspace{0.4cm}
 \begin{lstlisting}[
@@ -367,7 +373,7 @@ posterior <- tail(posterior, -100)
     label           = {code: jags gibbs sampler},
 ]
 jags_model_string <- "model {
-    for (i in 1:n * m) {
+    for (i in 1:(n*m)) {
         x[i] ~ dpois(theta[group[i]])
     }
 
@@ -425,32 +431,34 @@ model_simulation <- coda.samples(
 \end{lstlisting}
 
 \vspace{0.4cm}
+
+\newpage
 В рамках додаткового дослідження збіжності МСМС було запущено три ланцюги з різних початкових точок відліку. У першому наближенні з Рис.~\ref{pic: jags Gibbs Sampler traceplot} можна зробити висновок, що бажана збіжність досягнута. 
 
 \vspace{0.4cm}
 \begin{figure}[H]\centering
     \center{\includegraphics[width=\linewidth]{Images/JAGS Gibbs traceplot.png}}
-    \caption{Апостеріорний розподіл параметрів~$\sigma$ та $\theta_1$ (засоби \texttt{R-jags})}
+    \caption{Апостеріорний розподіл параметрів~$\sigma^{-1}$ та $\theta_1$ (засоби \texttt{R-jags})}
     \label{pic: jags Gibbs Sampler traceplot}
 \end{figure}
 
 Тим не менш, додатковим кроком проведемо діагностику Гелмана-Рубіна (Gelman-Rubin diagnostic), яка полягає у визначенні своєрідної міри розрізненості між декількома ланцюгами. Діагностика обчислює варіабельність (розкид, дисперсію) всередині ланцюгів, порівнюючи її з дисперсією між ланцюгами. Якщо всі ланцюги наблизилися до стаціонарного розподілу, то варіабельність між ланцюгами має бути відносно невеликою, а так званий <<коефіцієнт потенційного зменшення масштабу>> (potential scale reduction factor), який є результатом діагностики, має бути близьким до одиниці. Якщо значення значно перевищує одиницю, то можна зробити висновок, що ланцюги ще не збіглися за задану кількість ітерацій.
 
+Бачимо (Рис.~\ref{pic: jags Gibbs Sampler gelman diagnostic}), що значення конфіцієнта близьке до одиниці як для параметра~$\sigma$, так і для параметра~$\theta_1$. Більш того, спостерігаємо, що бажана збіжність досягнута вже на початкових ітераціях, тому <<період розгону>> ланцюга (burn-in period) було обачно покласти невеликим: 100 перших ітерацій (Лістинг~\ref{code: run jags gibbs sampler}).
+
 \vspace{0.4cm}
 \begin{figure}[H]\centering
     \center{\includegraphics[width=\linewidth]{Images/JAGS Gibbs gelman diagnostic.png}}
-    \caption{Діагностика Гелмана-Рубіна для параметрів~$\sigma$ та $\theta_1$}
+    \caption{Діагностика Гелмана-Рубіна для параметрів~$\sigma^{-1}$ та $\theta_1$}
     \label{pic: jags Gibbs Sampler gelman diagnostic}
 \end{figure}
 
-Бачимо (Рис.~\ref{pic: jags Gibbs Sampler gelman diagnostic}), що значення конфіцієнта близьке до одиниці як для параметра~$\sigma$, так і для параметра~$\theta_1$. Більш того, спостерігаємо, що бажана збіжність досягнута вже на початкових ітераціях, тому <<період розгону>> ланцюга (burn-in period) було обачно покласти невеликим: 100 перших ітерацій (Лістинг~\ref{code: run jags gibbs sampler}).
-
-Таким чином, у підсумку розглянемо перший з трьох ланцюгів, для якого дослідимо ознаки автокореляції (Рис.~\ref{pic: jags Gibbs Sampler autocorrelation}) та побудуємо Баєсівські оцінки (Табл.~\ref{table: R-jags Gibbs Sampler results}), які можна вважати змістовними та нідійними, адже ефективний розмір вибірки (effective size) є хоч і нижчим, ніж у попередньому підрозділі, однак все ще досить значним:~$N^{\sigma^{-1}}_{e.s.} = 3628$, $N^{\theta_1}_{e.s.} = 5946$.
+Таким чином, у підсумку розглянемо перший з трьох ланцюгів, для якого дослідимо ознаки автокореляції (Рис.~\ref{pic: jags Gibbs Sampler autocorrelation}) та побудуємо Баєсівські оцінки (Табл.~\ref{table: R-jags Gibbs Sampler results}), які можна вважати змістовними та нідійними, адже ефективний розмір вибірки (effective size) при довжині ланцюга~$N=10\,000$ є значним:~$N^{\sigma^{-1}}_{e.s.} = N^{\theta_1}_{e.s.} = 10\,000$.
 
 \vspace{0.4cm}
 \begin{figure}[H]\centering
     \center{\includegraphics[width=\linewidth]{Images/JAGS Gibbs autocorrelation.png}}
-    \caption{Автокореляційний графік параметрів~$\sigma$ та $\theta_1$ (засоби \texttt{R-jags})}
+    \caption{Автокореляційний графік параметрів~$\sigma^{-1}$ та $\theta_1$ (засоби \texttt{R-jags})}
     \label{pic: jags Gibbs Sampler autocorrelation}
 \end{figure}
 
@@ -460,7 +468,7 @@ model_simulation <- coda.samples(
             hlines={1pt,solid}, 
             vlines={1pt,solid},
             % hline{4-6}={1-5}{0pt},
-            colspec={Q[3cm,c]Q[3cm,c]Q[3cm,c]Q[3cm,c]},
+            colspec={X[c]X[c]X[c]X[c]X[c]X[c]},
             % cell{1}{1}={r=2,c=1}{c},
             % cell{1}{2}={r=1,c=2}{c},
             % cell{1}{4}={r=1,c=2}{c},
@@ -468,21 +476,20 @@ model_simulation <- coda.samples(
             row{2-3}={mode=math},
         }
 
-        Parameter   & Empirical mean & Standard deviation & Standard error \\
-        \sigma^{-1} & 1.3270         & 0.6076             & 0.006076       \\
-        \theta_1    & 1.8240         & 1.0278             & 0.010278       \\
+        Parameter & Empirical mean & Standard deviation & Standard error & $2.5\%$ - quantile & $97.5\%$ - quantile \\
+        \sigma^{-1} & 0.9210 & 0.6130 & 0.006130 & 0.9131 & 1.2990 \\
+        \theta_1    & 1.3640 & 0.1153 & 0.001153 & 1.1458 & 1.5970 \\
 
     \end{tblr}
     \caption{Результати імплементації вибірки Гіббса засобами \texttt{R-jags}}
     \label{table: R-jags Gibbs Sampler results}
 \end{table}
 
-На кінець, довірчий інтервал рівня довіри~$\gamma=0.95$ для математичного сподівання~$\mu$ у припущенні нормальної розподіленості параметра~$\theta_1$ матиме вигляд:
-\begin{equation}\label{eq: R-jags short expression of CI for theta mean}
-    \mu = 1.8240 \pm 0.0201
+Наостанок, $95\%$-імовірний інтервал для значень параметра~$\theta_1$ матиме вигляд:
+\begin{equation}\label{eq: theta1 R-jags credible interval}
+    P(1.1458 < \theta_1 < 1.5970) = 0.95,
 \end{equation}
-
-Водночас, значення оцінки~\eqref{eq: my BE}, отриманої в рамках Завдання 4, є таким:
+що практично повторює отримані результати~\eqref{eq: theta1 R-base credible interval}. Водночас, значення оцінки~\eqref{eq: my BE}, отриманої в рамках Завдання 4, є таким:
 \begin{equation}\label{eq: R-jags theta star estimation}
     \widehat{\theta}_1 = \left( k/m+\overline{X}_1 \right)\left( \frac{\overline{X}}{k/m+\overline{X}} \right) = 1.3608
 \end{equation}

@@ -64,6 +64,16 @@ plot_hist_and_distribution <- function(t, t0, a, b, mu_c, sigma_c, sample_size, 
     energy_limit_left <- head(energy_limit_left, 1)
     energy_limit_right <- tail(energy_limit_right, 1)
 
+    # Pull just the histogram info to smoothly draw geom_function() curve
+    geom_hist_data <- ggplot_build(
+        ggplot() +
+            geom_histogram(
+                data = data.frame(x = energy[energy_limit_left < energy & energy < energy_limit_right]),
+                mapping = aes(x, after_stat(density)),
+                bins = 40
+            )
+    )
+
     normal_distribution_plot <- ggplot() +
         geom_histogram(
             data = data.frame(x = energy[energy_limit_left < energy & energy < energy_limit_right]),
@@ -71,12 +81,16 @@ plot_hist_and_distribution <- function(t, t0, a, b, mu_c, sigma_c, sample_size, 
             # DENSITY INFO: https://plotnine.org/reference/geom_histogram
             # LEGEND: add fill = "Simulation histogram" inside aes() in order to legend
             fill = "gray",
-            color = "black",
-            bins = 40
+            color = "#6d6d6d",
+            bins = 40,
+            position = position_dodge(.7)
         ) +
         geom_function(
             mapping = aes(color = "Analytical distribution"),
-            xlim = c(min(energy_limit_left), max(energy_limit_right)),
+            xlim = c(
+                min(geom_hist_data$data[[1]]$xmin),
+                max(geom_hist_data$data[[1]]$xmax)
+            ),
             fun = energy_density,
             n = 500,
             na.rm = TRUE,
@@ -116,7 +130,7 @@ experiment <- data.frame(
 )
 
 sample_size <- 10000
-mode_index <- 1
+mode_index <- 3
 
 if (mode_index != 3) {
     plot_info <- list(

@@ -19,13 +19,16 @@ input_parameters <- data.frame(
 )
 
 ggplots_list <- list()
-samples_per_point_list <- c(1, 10, 100)
+samples_per_point_list <- c(100)
+plot_label <- paste(
+    "TRUE ERROR: NLS regression, n =",
+    input_parameters$points_number * samples_per_point_list[1]
+)
 
 test_stat_info <- data.frame()
 
 t_values <- seq(-90, 0, length.out = input_parameters$points_number)
-# c_real <- rnorm(1, mean = input_parameters$mu_c, sd = input_parameters$sigma_c)
-c_real <- 16.45341
+c_real <- input_parameters$mu_c
 
 for (k in 1:length(samples_per_point_list)) {
     input_parameters$samples_per_point <- samples_per_point_list[k]
@@ -43,7 +46,8 @@ for (k in 1:length(samples_per_point_list)) {
                     a = input_parameters$a,
                     b = input_parameters$b,
                     c = c_real
-                ) + rnorm(1, mean = 0.0, sd = 1.0)
+                    # c = rnorm(1, mean = c_real, sd = input_parameters$sigma_c)
+                ) + rnorm(1, mean = 0, sd = input_parameters$sigma_c)
             }
         }
 
@@ -112,7 +116,7 @@ for (k in 1:length(samples_per_point_list)) {
         labs(
             x = "C estimation value",
             y = "Density",
-            title = paste("One-shot sample size n =", 12 * input_parameters$samples_per_point)
+            # title = paste("One-shot sample size n =", 12 * input_parameters$samples_per_point)
         ) +
         # scale_fill_manual(name = NULL, values = c("gray")) + # Legend for fill color
         scale_color_manual(name = NULL, values = c("blue")) + # Legend for line color
@@ -139,9 +143,14 @@ print(test_stat_info)
 final_ggplot <- wrap_plots(ggplots_list, ncol = length(samples_per_point_list), nrow = 1)
 
 ggsave(
-    filename = "/home/anton/Code/KPI FAM subjects/Weekly diploma reports/Homework №2/LaTeX/Images/NLS regression.png",
+    filename = paste(
+        "/home/anton/Code/KPI FAM subjects/Weekly diploma reports/Homework №2/LaTeX/Images/",
+        plot_label,
+        ".png",
+        sep = ""
+    ),
     plot = final_ggplot,
-    width = 18,
+    width = 7,
     height = 5,
     units = "in",
     dpi = 1000,

@@ -173,23 +173,19 @@
 \setcounter{subsection}{2}
 \setcounter{equation}{0}
 
+\subsection*{Модель з глобальною адитивною похибкою}
+\addcontentsline{toc}{subsection}{Модель з глобальною адитивною похибкою}
+
 Нехай задана така нелінійна регресійна модель:
-\begin{equation}\label{eq: NLS energy intro}
+\begin{equation}\label{eq: NLS true error energy intro}
     E_i = A + B\tanh{\left( \frac{T_i-T_0}{C} \right)} + \varepsilon_i,\ i=\overline{1,n},
 \end{equation}
-де значення~$A$, $B$ та $T_0$ є фіксованими (Табл.~\ref{table: NLS parameters}), величина~$C$ є невідомим параметром моделі, а випадкова похибка~$\varepsilon_i$ має стандартний нормальний розподіл:
+де значення~$A$, $B$ та $T_0$ є фіксованими (Табл.~\ref{table: NLS parameters}), величина~$C$ є невідомим параметром моделі, а випадкова похибка~$\varepsilon_i$ має нормальний розподіл:
 \begin{equation}\label{eq: NLS error distribution}
-    \varepsilon_i \sim \mathrm{N}(0,1),\ i=\overline{1,n}
+    \varepsilon_i \sim \mathrm{N}(0,\sigma_c^2),\ i=\overline{1,n}
 \end{equation}
 
-Першим кроком згенеруємо вибірку даних~$\left( T_i, E_i \right)_{i=\overline{1,n}}$, на основі якої наступним кроком оцінимо параметр~$C$ за методом найменших квадратів (МНК).
-
-Для генерування даних параметр~$C$ покладемо як нормально розподілену випадкову величину з математичним сподіванням~$\mu_c$ та дисперсією~$\sigma_c$~(Табл.~\ref{table: NLS real C coefficient}):
-\begin{equation}\label{eq: NLS real C coefficien distribution}
-    C \sim \mathrm{N}(\mu_c,\sigma_c^2)
-\end{equation}
-
-В рамках задачі фокус зосереджений навколо~$12$ точкових значень температури~$T$, рівновіддалено розподілених на проміжку $[-90,0]$. Таким чином, організуємо генерування даних так: збиратимемо по $k$ спостережень на кожну з $12$ досліджуваних точок, тобто в результаті матимемо вибірку даних розміром~$n=12k$. Такий підхід дозволить спостерігати за результатами МНК при збільшенні розміру вибірки.
+Першим кроком згенеруємо вибірку даних~$\left( T_i, E_i \right)_{i=\overline{1,n}}$, на основі якої наступним кроком оцінимо параметр~$C$ за методом найменших квадратів (МНК). Для етапу генерування даних покладемо параметр~$C=\mu_c$.
 
 \vspace{0.4cm}
 \begin{table}[H]\centering
@@ -197,22 +193,43 @@
             hlines={1pt,solid}, 
             vlines={1pt,solid},
             % hline{4-6}={1-5}{0pt},
-            colspec={Q[3cm,c]Q[3cm,c]Q[3cm,c]},
+            colspec={X[c]X[c]X[c]X[c]X[c]},
             % cell{1}{1}={r=2,c=1}{c},
             % cell{1}{2}={r=1,c=2}{c},
             % cell{1}{4}={r=1,c=2}{c},
             row{1-2}={mode=math},
         }
 
-        A   & B   & T_0 \\
-        106 & 104 & -50 \\
+        A   & B   & T_0 & \mu_c & \sigma_c \\
+        106 & 104 & -50 & 15    & 5        \\
 
     \end{tblr}
     \caption{Значення параметрів регресійної моделі}
     \label{table: NLS parameters}
 \end{table}
 
-Почнімо з випадку~$k=1$, тобто одного спостереження на кожну з $12$ рівновіддалених значень температури на проміжку $[-90,0]$, тож розмір вибірки складатиме~$n=12$.  
+У рамках задачі фокус зосереджений навколо~$12$ точкових значень температури~$T$, рівновіддалено розподілених на проміжку $[-90,0]$. Таким чином, організуємо генерування даних так: збиратимемо по $k$ спостережень на кожну з $12$ досліджуваних точок, тобто в результаті матимемо вибірку даних розміром~$n=12k$. Такий підхід дозволить спостерігати за результатами МНК при збільшенні розміру вибірки.
+
+Отже, на основі наявної згенерованої вибірки розміром~$n=12k$ маємо змогу обчислити оцінку параметра~$C$ методом МНК. Для більш наочної картини проведемо серію з $N=10\,000$ повторних запусків МНК для щоразу інших згенерованих даних згідно моделі~\eqref{eq: NLS true error energy intro}. 
+
+Виконаємо аналогічні обчислення при розмірі вибірки в межах кожного запуску МНК як~$n=12$, $n=120$ та~$n=1200$, тобто при генеруванні~$k=1$, $k=10$ та~$k=100$ спостережень на кожну фокус-точку, відповідно. Графіки гістограм оцінок параметра~$C$ продемонстровано на Рис.~\ref{pic: NLS true error results}. З Табл.~\ref{table: NLS true error results} бачимо, що зі збільшенням розміру вибірки~$n$ МНК демонструє збіжні властивості. 
+
+\vspace{0.4cm}
+\begin{figure}[H]
+    \begin{minipage}[H]{0.32\linewidth}
+        \center{\includegraphics[width=1\linewidth]{Images/TRUE ERROR: NLS regression, n = 12.png}} а) Вибірка $n=12$
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.32\linewidth}
+        \center{\includegraphics[width=1\linewidth]{Images/TRUE ERROR: NLS regression, n = 120.png}} б) Вибірка $n=120$
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.32\linewidth}
+        \center{\includegraphics[width=1\linewidth]{Images/TRUE ERROR: NLS regression, n = 1200.png}} в) Вибірка $n=1200$
+    \end{minipage}
+    \caption{Результати серії з $N=10\,000$ повторних запусків МНК (глобальна адитивна помилки)}
+    \label{pic: NLS true error results}
+\end{figure}
 
 \vspace{0.4cm}
 \begin{table}[H]\centering
@@ -220,28 +237,30 @@
             hlines={1pt,solid}, 
             vlines={1pt,solid},
             % hline{4-6}={1-5}{0pt},
-            colspec={Q[3cm,c]Q[3cm,c]},
-            % cell{1}{1}={r=2,c=1}{c},
+            colspec={Q[3cm,c]Q[3cm,c]Q[3cm,c]Q[3cm,c]},
+            cell{2}{2}={r=3,c=1}{c},
             % cell{1}{2}={r=1,c=2}{c},
             % cell{1}{4}={r=1,c=2}{c},
-            row{1-2}={mode=math},
+            row{2-4}={mode=math},
         }
 
-        \mu_c & \sigma_c \\
-        15    & 5        \\
+        Розмір вибірки & Істинне значення & Вибіркове середнє & Стандартне відхилення \\
+        n = 12         & 15               & 15.0097           & 0.8150                \\
+        n = 120        & 15               & 15.0002           & 0.2572                \\
+        n = 1200       & 15               & 15.0006           & 0.0814                \\
 
     \end{tblr}
-    \caption{Істинні параметри розподілу коефіцієнта~$C$~\eqref{eq: NLS real C coefficien distribution}}
-    \label{table: NLS real C coefficient}
+    \caption{Статистичні характеристики серії з $N=10\,000$ повторних запусків МНК (глобальна адитивна помилка)}
+    \label{table: NLS true error results}
 \end{table}
 
-Імплементація МНК реалізована засобами мови \texttt{R} за допомогою бібліотеки~\texttt{gslnls}. Короткі викладки програмного коду наведені у Лістингу~\ref{code: NLS}.
+Імплементація МНК засобами мови \texttt{R} за допомогою бібліотеки~\texttt{gslnls} наведена у Лістингу~\ref{code: NLS}.
 
 \vspace{0.4cm}
 \begin{lstlisting}[
     style           = myR,
     % backgroundcolor = {},
-    caption         = {Запуск МНК для нелінійної регресіїної моделі~\eqref{eq: NLS energy intro}},
+    caption         = {Запуск МНК для нелінійної регресіїної моделі~\eqref{eq: NLS true error energy intro}},
     label           = {code: NLS},
 ]
 energy_dependency <- function(T, T0, A, B, C) {
@@ -268,44 +287,35 @@ model_gslnls <- gsl_nls(
 )
 \end{lstlisting}
 
-\vspace{0.4cm}
-В результаті отримаємо оцінку параметра~$C$ на основі наявних згенерованих даних. Для більш наочної картини проведемо серію з $N=10\,000$ повторних запусків МНК при фіксованому істинному значенні коефіцієнта~$C$ для щоразу інших згенерованих даних згідно моделі~\eqref{eq: NLS energy intro}. 
+\subsection*{Модель з локальною адитивною похибкою}
+\addcontentsline{toc}{subsection}{Модель з локальною адитивною похибкою}
 
-Зобразимо на Рис.~\ref{pic: NLS k = 1 results} гістограму оцінок параметра~$C$, а у Табл.~\ref{table: NLS k = 1 results}~--- вибіркове середнє та стандартне відхилення вибірки оцінок. 
-
-\vspace{0.4cm}
-\begin{table}[H]\centering
-    \begin{tblr}{
-            hlines={1pt,solid}, 
-            vlines={1pt,solid},
-            % hline{4-6}={1-5}{0pt},
-            colspec={Q[3cm,c]Q[3cm,c]Q[3cm,c]},
-            % cell{1}{1}={r=2,c=1}{c},
-            % cell{1}{2}={r=1,c=2}{c},
-            % cell{1}{4}={r=1,c=2}{c},
-            row{2}={mode=math},
-        }
-
-        Істинне значення & Вибіркове середнє & Стандартне відхилення \\
-        16.4534          & 16.4537           & 0.1690                \\
-
-    \end{tblr}
-    \caption{Статистичні характеристики серії з $N=10\,000$ повторних запусків МНК, розмір вибірки при кожному запуску~$n=12$}
-    \label{table: NLS k = 1 results}
-\end{table}
-
-Своєю чергою, довірчий інтервал рівня довіри~$\gamma=0.95$ для математичного сподівання~$\mu$ у припущенні нормальної розподіленості оцінок параметра~$C$ матиме вигляд (детальніше про побудову інтервалу~--- у Домашньому завданні №1):
-\begin{equation}\label{eq: CI for C mean}
-    \mu = 16.4537 \pm 0.0033
+Нехай тепер задана ось така модель:
+\begin{equation}\label{eq: NLS false error energy intro}
+    E_i = A + B\tanh{\left( \frac{T_i-T_0}{C + \varepsilon_i} \right)},\ i=\overline{1,n},
+\end{equation}
+де значення~$A$, $B$ та $T_0$ є фіксованими (Табл.~\ref{table: NLS parameters}), величина~$C$ є невідомим параметром моделі, а випадкова похибка~$\varepsilon_i$ має нормальний розподіл:
+\begin{equation}
+    \varepsilon_i \sim \mathrm{N}(0,\sigma_c^2),\ i=\overline{1,n}
 \end{equation}
 
-\begin{figure}[H]\centering
-    \center{\includegraphics[width=\linewidth]{Images/NLS regression n = 12.png}}
-    \caption{Гістограма серії з $N=10\,000$ повторних запусків МНК, розмір вибірки при кожному запуску~$n=12$}
-    \label{pic: NLS k = 1 results}
-\end{figure}
+Організація генерування даних у контексті моделі~\eqref{eq: NLS false error energy intro} аналогічна попередньому прикладу з глобальною адитивною похибкою. Однак, отримані результати свідчать про неспроможність МНК (Рис.~\ref{pic: NLS false error results}).
 
-Наостанок, проведемо аналогічні обчислення при розмірі вибірки в межах кожного з~$N=10\,000$ запусків МНК як~$n=120$ та~$n=1200$, тобто при генеруванні~$k=10$ та~$k=100$ спостережень на кожну фокус-точку, відповідно. Усі графіки продемонстровано на Рис.~\ref{pic: NLS results}, а порівняльні ознаки наведені у Табл.~\ref{table: NLS results}. 
+\begin{figure}[H]
+    \begin{minipage}[H]{0.32\linewidth}
+        \center{\includegraphics[width=1\linewidth]{Images/FALSE ERROR: NLS regression, n = 12.png}} а) Вибірка $n=12$
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.32\linewidth}
+        \center{\includegraphics[width=1\linewidth]{Images/FALSE ERROR: NLS regression, n = 120.png}} б) Вибірка $n=120$
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.32\linewidth}
+        \center{\includegraphics[width=1\linewidth]{Images/FALSE ERROR: NLS regression, n = 1200.png}} в) Вибірка $n=1200$
+    \end{minipage}
+    \caption{Результати серії з $N=10\,000$ повторних запусків МНК (локальна адитивна помилка)}
+    \label{pic: NLS false error results}
+\end{figure}
 
 \vspace{0.4cm}
 \begin{table}[H]\centering
@@ -321,21 +331,14 @@ model_gslnls <- gsl_nls(
         }
 
         Розмір вибірки & Істинне значення & Вибіркове середнє & Стандартне відхилення \\
-        n = 12         & 16.4534          & 16.4537           & 0.1690                \\
-        n = 120        & 16.4534          & 16.4532           & 0.0533                \\
-        n = 1200       & 16.4534          & 16.4533           & 0.0172                \\
+        n = 12         & 15               & 14.7290           & 2.8841                \\
+        n = 120        & 15               & 14.7791           & 0.7993                \\
+        n = 1200       & 15               & 14.7945           & 0.2491                \\
 
     \end{tblr}
-    \caption{Статистичні характеристики серії з $N=10\,000$ повторних запусків МНК для різних розмірів вибірки}
-    \label{table: NLS results}
+    \caption{Статистичні характеристики серії з $N=10\,000$ повторних запусків МНК (локальна адитивна помилка)}
+    \label{table: NLS false error results}
 \end{table}
-
-\vspace{0.4cm}
-\begin{figure}[H]\centering
-    \center{\includegraphics[width=\linewidth]{Images/NLS regression.png}}
-    \caption{Гістограми серії з $N=10\,000$ повторних запусків МНК для різних розмірів вибірки}
-    \label{pic: NLS results}
-\end{figure}
 
 \newpage
 \printbibliography[title={Перелік посилань}] % \nocite{*}

@@ -60,7 +60,7 @@ plot_hist_and_distribution <- function(t, t0, a, b, mu_c, sigma_c, sample_size, 
     energy_limit_right <- tail(energy_limit_right, 1)
 
     # Simulation histogram
-    hist(
+    hist_object <- hist(
         energy[energy_limit_left < energy & energy < energy_limit_right],
         freq = FALSE,
         breaks = "Freedman-Diaconis",
@@ -72,8 +72,8 @@ plot_hist_and_distribution <- function(t, t0, a, b, mu_c, sigma_c, sample_size, 
     # Analytical distribution
     curve(
         expr = energy_density(x, t, t0, a, b, mu_c, sigma_c),
-        from = energy_limit_left,
-        to = energy_limit_right,
+        from = min(hist_object$breaks),
+        to = max(hist_object$breaks),
         n = 700,
         add = TRUE,
         col = "blue"
@@ -95,7 +95,7 @@ experiment <- data.frame(
 )
 
 sample_size <- 10000
-mode_index <- 3
+mode_index <- 1
 
 # LaTeX project has another folder, so set full path and download image
 png(

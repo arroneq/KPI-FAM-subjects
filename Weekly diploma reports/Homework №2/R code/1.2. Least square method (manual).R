@@ -1,5 +1,4 @@
-# install.packages("dplyr")
-library("gslnls")
+# install.packages("gslnls")
 library("ggplot2")
 library("patchwork")
 
@@ -33,8 +32,16 @@ Eb <- function(T, Ub, Lb, Db, Cb) {
     )
 }
 
-energy_function <- function(T, U, L, C, D) {
-    return((U + L) / 2 + ((U - L) / 2) * tanh((T - D) / C))
+energy_function <- function(T, U, L, D, C) {
+    return(
+        (U + L) / 2 + ((U - L) / 2) * tanh((T - D) / C)
+    )
+}
+
+reverse_energy_function <- function(E, U, L, D, C) {
+    return(
+        (C * log((E - L) / (U - E))) / 2 + D
+    )
 }
 
 input_parameters <- data.frame(
@@ -42,16 +49,12 @@ input_parameters <- data.frame(
     L = 2.0,
     D = -50.0,
     C = 15.0,
+    initial_guess <- "input values", # "random", "input values"
     points_number <- 12,
     samples_per_point <- 1,
-    nls_runs_number <- 1,
+    nls_runs_number <- 1000,
     nls_iterations_per_run <- 300
 )
-
-Ub <- 100.0
-Lb <- 2.0
-Db <- 4.0
-Cb <- -5.0
 
 Uadm <- 10
 Ladm <- 0.25
@@ -73,15 +76,27 @@ for (run in 1:input_parameters$nls_runs_number) {
             x_points[i, j] <- t_values[i]
             y_points[i, j] <- energy_function(
                 T = t_values[i],
-                U = input_parameters$U + rnorm(1, mean = 0, sd = 1),
-                L = input_parameters$L + rnorm(1, mean = 0, sd = 1),
-                C = input_parameters$C + rnorm(1, mean = 0, sd = 1),
-                D = input_parameters$D + rnorm(1, mean = 0, sd = 1)
+                U = input_parameters$U + rnorm(1, mean = 0, sd = 5),
+                L = input_parameters$L + rnorm(1, mean = 0, sd = 5),
+                D = input_parameters$D + rnorm(1, mean = 0, sd = 5),
+                C = input_parameters$C + rnorm(1, mean = 0, sd = 5)
             )
         }
     }
 
     data <- data.frame(T = as.vector(x_points), E = as.vector(y_points))
+
+    if (input_parameters$initial_guess == "input values") {
+        Ub <- input_parameters$U
+        Lb <- input_parameters$L
+        Db <- input_parameters$D
+        Cb <- input_parameters$C
+    } else if (input_parameters$initial_guess == "random") {
+        Ub <- runif(1, 50, 150)
+        Lb <- runif(1, 5, 15)
+        Db <- runif(1, -40, -10)
+        Cb <- runif(1, 5, 10)
+    }
 
     iteration <- 1
     diff_error <- 100
@@ -157,22 +172,158 @@ for (run in 1:input_parameters$nls_runs_number) {
         kL <- Lc / Ladm
         kD <- Dc / Dadm
         kC <- Cc / Cadm
-        kmax <- max(kU, kL, kD, kC)
+        kmax <- max(kU, kL, kD, kC, 1)
 
         Ub <- Ub + Uc / kmax
         Lb <- Lb + Lc / kmax
         Db <- Db + Dc / kmax
         Cb <- Cb + Cc / kmax
 
-        diff_error <- kmax
+        diff_error <- max(kU, kL, kD, kC)
         iteration <- iteration + 1
     }
 
     estimated_coeffs_dataframe <- rbind(
         estimated_coeffs_dataframe,
-        estimated_coeffs_per_run[input_parameters$nls_iterations_per_run, ],
+        tail(estimated_coeffs_per_run, 1),
         make.row.names = FALSE
     )
 }
 
-print(estimated_coeffs_dataframe)
+coef_labels <- c("U", "L", "D", "C")
+coef_histplot <- list()
+
+for (i in 1:4) {
+    coef_histplot[[i]] <- ggplot() +
+        geom_histogram(
+            data = data.frame(x = estimated_coeffs_dataframe[, i][
+                estimated_coeffs_dataframe[, i] > -500 & estimated_coeffs_dataframe[, i] < 500
+            ]),
+            mapping = aes(x, y = after_stat(density)),
+            # DENSITY INFO: https://plotnine.org/reference/geom_histogram
+            # LEGEND: add fill = "Simulation histogram" inside aes() in order to legend
+            fill = "gray",
+            color = "#6f6f6f",
+            bins = 40
+        ) +
+        geom_vline(
+            data = data.frame(x = input_parameters[, i]),
+            mapping = aes(xintercept = x, color = "Real value"),
+            lwd = 0.8
+        ) +
+        labs(
+            x = paste(coef_labels[i], "coefficient value"),
+            y = "Density",
+            # title = paste("One-shot sample size n =", 12 * input_parameters$samples_per_point)
+        ) +
+        # scale_fill_manual(name = NULL, values = c("gray")) + # Legend for fill color
+        scale_color_manual(name = NULL, values = c("blue")) + # Legend for line color
+        theme(
+            legend.position = c(0.98, 0.98),
+            legend.justification = c(1.0, 1.0),
+            # legend.key.width = unit(3, "cm"),
+            legend.box.background = element_rect(color = "black", linewidth = 1),
+            legend.text = element_text(family = "CMU serif", size = 12),
+            axis.text = element_text(family = "CMU serif", size = 10),
+            axis.title = element_text(family = "CMU serif", size = 12),
+            axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)),
+            axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)),
+            plot.title = element_text(
+                margin = margin(t = 0, r = 0, b = 10, l = 0),
+                family = "CMU serif",
+                hjust = 0.5,
+                size = 12
+            )
+        )
+
+    ggsave(
+        filename = paste(
+            "/home/anton/Code/KPI FAM subjects/Weekly diploma reports/Homework №2/LaTeX/Images/NLS manual: ",
+            coef_labels[i], " histplot",
+            ".png",
+            sep = ""
+        ),
+        plot = coef_histplot[[i]],
+        width = 7,
+        height = 5,
+        units = "in",
+        dpi = 1000,
+    )
+}
+
+for (i in 1:4) {
+    print(paste(coef_labels[i], "outliers:", sum(
+        estimated_coeffs_dataframe[, i] < -500 | estimated_coeffs_dataframe[, i] > 500,
+        na.rm = TRUE
+    )))
+}
+
+true_temperature <- reverse_energy_function(
+    E = 110,
+    U = input_parameters$U,
+    L = input_parameters$L,
+    D = input_parameters$D,
+    C = input_parameters$C
+)
+
+temperature <- array()
+for (i in 1:input_parameters$nls_runs_number....10) {
+    temperature[i] <- reverse_energy_function(
+        E = 110,
+        U = estimated_coeffs_dataframe[i, 1],
+        L = estimated_coeffs_dataframe[i, 2],
+        D = estimated_coeffs_dataframe[i, 3],
+        C = estimated_coeffs_dataframe[i, 4]
+    )
+}
+
+temperature_histplot <- ggplot() +
+    geom_histogram(
+        data = data.frame(x = temperature),
+        mapping = aes(x, y = after_stat(density)),
+        # DENSITY INFO: https://plotnine.org/reference/geom_histogram
+        # LEGEND: add fill = "Simulation histogram" inside aes() in order to legend
+        fill = "gray",
+        color = "#6f6f6f",
+        bins = 40
+    ) +
+    geom_vline(
+        data = data.frame(x = true_temperature),
+        mapping = aes(xintercept = x, color = "Real value"),
+        lwd = 0.8
+    ) +
+    labs(
+        x = "Temperature value",
+        y = "Density",
+        # title = paste("One-shot sample size n =", 12 * input_parameters$samples_per_point)
+    ) +
+    # scale_fill_manual(name = NULL, values = c("gray")) + # Legend for fill color
+    scale_color_manual(name = NULL, values = c("blue")) + # Legend for line color
+    theme(
+        legend.position = c(0.98, 0.98),
+        legend.justification = c(1.0, 1.0),
+        # legend.key.width = unit(3, "cm"),
+        legend.box.background = element_rect(color = "black", linewidth = 1),
+        legend.text = element_text(family = "CMU serif", size = 12),
+        axis.text = element_text(family = "CMU serif", size = 10),
+        axis.title = element_text(family = "CMU serif", size = 12),
+        axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)),
+        axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)),
+        plot.title = element_text(
+            margin = margin(t = 0, r = 0, b = 10, l = 0),
+            family = "CMU serif",
+            hjust = 0.5,
+            size = 12
+        )
+    )
+
+ggsave(
+    filename = "/home/anton/Code/KPI FAM subjects/Weekly diploma reports/Homework №2/LaTeX/Images/NLS manual: temperature histplot.png",
+    plot = temperature_histplot,
+    width = 7,
+    height = 5,
+    units = "in",
+    dpi = 1000,
+)
+
+print(paste("Temperature NaNs:", sum(is.na(temperature))))

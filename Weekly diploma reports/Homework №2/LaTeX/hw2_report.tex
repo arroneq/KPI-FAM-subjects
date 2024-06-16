@@ -2,6 +2,7 @@
 % !TeX encoding = utf8
 % !BIB program = biber
 % !TeX spellcheck = uk_UA
+% chktex-file 2, 3, 12, 24
 
 \documentclass{mathreport}
 \input{packages}
@@ -21,11 +22,11 @@
 \setcounter{subsection}{1}
 \setcounter{equation}{0}
 
-Нехай задано таку функціональну залежність значень енергії~$E$ та температури~$T:$
+Нехай задано таку функціональну залежність значень енергії~$E$ та температури~$T$:
 \begin{equation}\label{eq: energy intro}
     E(T) = A + B\tanh{\left( \frac{T-T_0}{C} \right)},
 \end{equation}
-де значення~$A$, $B$, $C$ та $T_0$ в рамках фізичної моделі є константами. Тепер нехай покладемо величину~$C$ як неперервно розподілену нормальну випадкову величну з математичним сподіванням~$\mu_c$ та дисперсією~$\sigma_c:$
+де значення~$A$, $B$, $C$ та $T_0$ в рамках фізичної моделі є константами. Тепер нехай покладемо величину~$C$ як неперервно розподілену нормальну випадкову величну з математичним сподіванням~$\mu_c$ та дисперсією~$\sigma_c$:
 \begin{equation}\label{eq: C coefficient distribution}
     C \sim \mathrm{N}(\mu_c,\sigma_c^2),
 \end{equation}

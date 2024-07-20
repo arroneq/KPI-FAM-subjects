@@ -49,10 +49,10 @@ input_parameters <- data.frame(
     L = 2.0,
     D = -50.0,
     C = 15.0,
-    initial_guess <- "input values", # "random", "input values"
+    initial_guess <- "random", # "random", "input values"
     points_number <- 12,
     samples_per_point <- 1,
-    nls_runs_number <- 1000,
+    nls_runs_number <- 20,
     nls_iterations_per_run <- 300
 )
 
@@ -62,7 +62,15 @@ Dadm <- 0.25
 Cadm <- 0.2
 
 t_values <- seq(-90, 0, length.out = input_parameters$points_number)
+# t_values <- append(t_values, c(-190, 100)) # attempt to stabilize solution
+
 estimated_coeffs_dataframe <- data.frame()
+
+coef_labels <- c("U", "L", "D", "C")
+coef_histplot <- list()
+coef_traceplot <- list()
+
+images_dir <- "/home/anton/Code/KPI-FAM-subjects/Weekly diploma reports/Homework №2/LaTeX/Images/"
 
 for (run in 1:input_parameters$nls_runs_number) {
     # Generate sample points
@@ -183,15 +191,61 @@ for (run in 1:input_parameters$nls_runs_number) {
         iteration <- iteration + 1
     }
 
+    for (i in 1:4) {
+        coef_traceplot[[i]] <- ggplot() +
+            geom_point(
+                data = data.frame(x = 1:length(estimated_coeffs_per_run[, 1]), y = estimated_coeffs_per_run[, i]),
+                mapping = aes(x, y)
+            ) +
+            geom_hline(
+                data = data.frame(y = input_parameters[, i]),
+                mapping = aes(yintercept = y, color = "Real value"),
+                lwd = 0.8
+            ) +
+            labs(
+                x = "Iteration",
+                y = "Estimated value",
+                # title = paste("One-shot sample size n =", 12 * input_parameters$samples_per_point)
+            ) +
+            # scale_fill_manual(name = NULL, values = c("gray")) + # Legend for fill color
+            scale_color_manual(name = NULL, values = c("blue")) + # Legend for line color
+            theme(
+                legend.position = c(0.98, 0.98),
+                legend.justification = c(1.0, 1.0),
+                # legend.key.width = unit(3, "cm"),
+                legend.box.background = element_rect(color = "black", linewidth = 1),
+                legend.text = element_text(family = "CMU serif", size = 12),
+                axis.text = element_text(family = "CMU serif", size = 10),
+                axis.title = element_text(family = "CMU serif", size = 12),
+                axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)),
+                axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)),
+                plot.title = element_text(
+                    margin = margin(t = 0, r = 0, b = 10, l = 0),
+                    family = "CMU serif",
+                    hjust = 0.5,
+                    size = 12
+                )
+            )
+
+        ggsave(
+            filename = paste(
+                images_dir, "NLS manual: ", coef_labels[i], " traceplot (last nls run)", ".png",
+                sep = ""
+            ),
+            plot = coef_traceplot[[i]],
+            width = 7,
+            height = 5,
+            units = "in",
+            dpi = 1000,
+        )
+    }
+
     estimated_coeffs_dataframe <- rbind(
         estimated_coeffs_dataframe,
         tail(estimated_coeffs_per_run, 1),
         make.row.names = FALSE
     )
 }
-
-coef_labels <- c("U", "L", "D", "C")
-coef_histplot <- list()
 
 for (i in 1:4) {
     coef_histplot[[i]] <- ggplot() +
@@ -238,9 +292,7 @@ for (i in 1:4) {
 
     ggsave(
         filename = paste(
-            "/home/anton/Code/KPI FAM subjects/Weekly diploma reports/Homework №2/LaTeX/Images/NLS manual: ",
-            coef_labels[i], " histplot",
-            ".png",
+            images_dir, "NLS manual: ", coef_labels[i], " histplot", ".png",
             sep = ""
         ),
         plot = coef_histplot[[i]],
@@ -318,7 +370,10 @@ temperature_histplot <- ggplot() +
     )
 
 ggsave(
-    filename = "/home/anton/Code/KPI FAM subjects/Weekly diploma reports/Homework №2/LaTeX/Images/NLS manual: temperature histplot.png",
+    filename = paste(
+        images_dir, "NLS manual: temperature histplot.png",
+        sep = ""
+    ),
     plot = temperature_histplot,
     width = 7,
     height = 5,
